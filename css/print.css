@@ -1,0 +1,84 @@
+/* ============================================
+   DEVI ADS Invoice System v2.0
+   Print & PDF Optimization
+   ============================================ */
+
+@media print {
+    /* Hide everything except invoice preview */
+    body {
+        background: white !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    body::before {
+        display: none !important;
+    }
+
+    .wp-billing-container,
+    .header,
+    .invoice-section,
+    .note-section,
+    .totals-section,
+    .action-bar,
+    .whatsapp-section,
+    .loading,
+    .success-message,
+    .error-message {
+        display: none !important;
+    }
+
+    .invoice-preview {
+        display: block !important;
+        padding: 10mm 10mm 10mm 24mm !important; /* Left margin for hole punching */
+        margin: 0 !important;
+        box-shadow: none !important;
+        font-size: 12pt;
+    }
+
+    .invoice-preview * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+
+    /* Prevent page breaks inside critical sections */
+    .invoice-header,
+    .invoice-customer,
+    .invoice-totals,
+    .invoice-signature,
+    .invoice-bank-details,
+    .invoice-notes,
+    .invoice-footer {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* Allow page breaks between sections */
+    .invoice-table {
+        page-break-inside: auto;
+    }
+
+    .invoice-table tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* Ensure table headers repeat on each page */
+    .invoice-table thead {
+        display: table-header-group;
+    }
+
+    /* Sharp text rendering */
+    * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+}
+
+/* A4 page size optimization for PDF generation */
+@page {
+    size: A4 portrait;
+    margin: 10mm 10mm 10mm 24mm;
+}

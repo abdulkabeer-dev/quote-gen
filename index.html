@@ -1,1534 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Professional Billing System</title>
+    <title>DEVI ADS - Tax Invoice Generator</title>
+    <meta name="description" content="Professional Tax Invoice Generator for DEVI ADS Outdoor Advertising - Generate GST compliant invoices with hoarding details, service charges, and digital signatures" />
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet"> <!-- Added Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
     <!-- Google Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <!-- jsPDF Library for PDF generation -->
+
+    <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- html2canvas for PDF conversion -->
+    <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <style>
-        :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #06b6d4;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --dark-color: #1e293b;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-600: #6b7280;
-            --gray-700: #334155;
-            --white: #ffffff;
-            --black: #000000;
-            --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --border-radius: 12px;
-            --border-radius-lg: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--dark-color);
-            line-height: 1.6;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        .wp-billing-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 32px 24px;
-            position: relative;
-            z-index: 1;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            z-index: -1;
-        }
-
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        .header {
-            background: var(--white);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-xl);
-            padding: 40px;
-            margin-bottom: 32px;
-            border: 1px solid var(--gray-200);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-primary);
-        }
-
-        .company-branding {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            gap: 40px;
-            align-items: start;
-        }
-
-        .logo-section {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .logo-upload {
-            width: 240px;
-            height: 150px;
-            border: 3px dashed var(--secondary-color);
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .logo-upload:hover {
-            border-color: var(--primary-color);
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .logo-upload input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-        }
-
-        .logo-preview {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 8px;
-            box-shadow: var(--shadow-md);
-        }
-
-        .company-details {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: var(--gray-700);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-input {
-            padding: 16px 20px;
-            border: 2px solid var(--gray-200);
-            border-radius: var(--border-radius);
-            font-size: 16px;
-            font-weight: 500;
-            transition: var(--transition);
-            background: var(--white);
-            font-family: inherit;
-            width: 100%;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .invoice-section {
-            background: var(--white);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-xl);
-            padding: 40px;
-            margin-bottom: 32px;
-            border: 1px solid var(--gray-200);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .invoice-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: var(--gradient-primary);
-            border-radius: 50%;
-            opacity: 0.1;
-            transform: translate(50%, -50%);
-        }
-
-        .section-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--dark-color);
-            margin-bottom: 32px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            position: relative;
-        }
-
-        .section-icon {
-            color: var(--primary-color);
-            font-size: 32px;
-            padding: 12px;
-            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(6, 182, 212, 0.1));
-            border-radius: 50%;
-        }
-
-        .customer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .invoice-meta {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            padding: 32px;
-            background: var(--gradient-primary);
-            color: var(--white);
-            border-radius: var(--border-radius);
-            margin-bottom: 32px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .invoice-meta::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-
-        .invoice-meta .form-input {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
-            color: var(--white);
-        }
-
-        .invoice-meta .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .invoice-meta .form-label {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .product-section {
-            margin-bottom: 32px;
-        }
-
-        /* Enhanced Mobile-Friendly Product Table */
-        .scroll-indicator {
-            display: none;
-            text-align: center;
-            padding: 16px;
-            background: linear-gradient(135deg, #fef3c7, #fed7aa);
-            color: var(--warning-color);
-            font-weight: 600;
-            border-radius: var(--border-radius);
-            margin-bottom: 16px;
-            border: 2px solid rgba(245, 158, 11, 0.3);
-            animation: pulseIndicator 2s infinite;
-        }
-
-        @keyframes pulseIndicator {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.8;
-                transform: scale(1.02);
-            }
-        }
-
-        .product-table-container {
-            width: 100%;
-            overflow-x: auto;
-            overflow-y: visible;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--gray-200);
-            -webkit-overflow-scrolling: touch;
-            position: relative;
-        }
-
-        .product-table {
-            width: 100%;
-            min-width: 900px;
-            border-collapse: collapse;
-        }
-
-        .table-header {
-            background: var(--gradient-primary);
-            color: var(--white);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .table-header th {
-            padding: 20px 16px;
-            text-align: left;
-            font-weight: 700;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            white-space: nowrap;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .table-header th:last-child {
-            border-right: none;
-        }
-
-        .table-row {
-            border-bottom: 1px solid var(--gray-100);
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .table-row:hover {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-        }
-
-        .table-cell {
-            padding: 20px 16px;
-            vertical-align: middle;
-            white-space: nowrap;
-            border-right: 1px solid var(--gray-100);
-        }
-
-        .table-cell:last-child {
-            border-right: none;
-        }
-
-        .table-input, .table-select {
-            width: 100%;
-            min-width: 140px;
-            padding: 12px 14px;
-            border: 2px solid var(--gray-200);
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: var(--transition);
-            font-family: inherit;
-            background: var(--white);
-        }
-
-        .table-input:focus, .table-select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-        
-        .table-select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            background-size: 1em;
-            padding-right: 2.5em;
-        }
-
-        .table-header th:nth-child(1) { width: 60px; min-width: 60px; } /* S.No */
-        .table-header .col-manual { width: 350px; min-width: 300px; } /* Manual Product Name */
-        .table-header .col-category, .table-header .col-item { width: 250px; min-width: 200px; } /* Category/Item */
-        .table-header th:nth-child(4) { width: 120px; min-width: 120px; } /* Qty */
-        .table-header th:nth-child(5) { width: 140px; min-width: 140px; } /* Price */
-        .table-header th:nth-child(6) { width: 140px; min-width: 140px; } /* Total */
-        .table-header th:nth-child(7) { width: 120px; min-width: 120px; } /* Actions */
-
-
-        .btn {
-            padding: 16px 32px;
-            border: none;
-            border-radius: var(--border-radius);
-            font-weight: 700;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s;
-        }
-
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: var(--white);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.4);
-        }
-
-        .btn-success {
-            background: var(--success-color);
-            color: var(--white);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-danger {
-            background: var(--danger-color);
-            color: var(--white);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(239, 68, 68, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: 2px solid var(--gray-200);
-        }
-
-        .btn-secondary:hover {
-            background: var(--gray-200);
-            transform: translateY(-2px);
-        }
-
-        .btn.btn-icon-only {
-            padding: 0;
-            width: 44px;
-            height: 44px;
-            min-width: 44px;
-            justify-content: center;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .btn-whatsapp {
-            background: #25d366;
-            color: white;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-whatsapp:hover {
-            background: #20c45a;
-            transform: translateY(-3px);
-        }
-
-        /* Note Section Styles */
-        .note-section {
-            background: var(--white);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-xl);
-            padding: 40px;
-            margin-bottom: 32px;
-            border: 1px solid var(--gray-200);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .note-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--warning-color), var(--success-color));
-            border-radius: 50%;
-            opacity: 0.1;
-            transform: translate(50%, -50%);
-        }
-
-        .note-content {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .note-display {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            border: 2px solid var(--gray-200);
-            border-radius: var(--border-radius);
-            padding: 24px;
-            min-height: 120px;
-            font-size: 16px;
-            line-height: 1.6;
-            color: var(--gray-700);
-            position: relative;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .note-display.empty {
-            color: var(--gray-500);
-            font-style: italic;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .note-editor {
-            display: none;
-        }
-
-        .note-editor.active {
-            display: block;
-        }
-
-        .note-textarea {
-            width: 100%;
-            min-height: 150px;
-            max-height: 300px;
-            padding: 20px;
-            border: 2px solid var(--primary-color);
-            border-radius: var(--border-radius);
-            font-size: 16px;
-            line-height: 1.6;
-            font-family: inherit;
-            background: var(--white);
-            resize: vertical;
-            transition: var(--transition);
-        }
-
-        .note-textarea:focus {
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-
-        .note-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .note-actions.editing {
-            justify-content: flex-end;
-        }
-
-        .totals-section {
-            background: var(--white);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-xl);
-            padding: 40px;
-            border: 1px solid var(--gray-200);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .totals-section::before {
-            content: '';
-            position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 200px;
-            height: 200px;
-            background: var(--gradient-primary);
-            border-radius: 50%;
-            opacity: 0.05;
-        }
-
-        .totals-grid {
-            display: grid;
-            gap: 24px;
-        }
-
-        .totals-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid var(--gray-100);
-            transition: var(--transition);
-        }
-
-        .totals-row:last-child {
-            border-bottom: none;
-            padding-top: 24px;
-            margin-top: 16px;
-            border-top: 3px solid var(--gray-200);
-        }
-
-        .gst-config {
-            background: linear-gradient(135deg, #fef3c7, #fed7aa);
-            padding: 24px;
-            border-radius: var(--border-radius);
-            margin-bottom: 24px;
-            border-left: 4px solid var(--warning-color);
-        }
-
-        .gst-toggle {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--primary-color);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        .gst-rates {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .gst-rate-input {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .gst-rate-input label {
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-
-        .gst-rate-input input {
-            padding: 12px 16px;
-            border: 2px solid var(--gray-300);
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .grand-total {
-            background: var(--gradient-primary);
-            color: var(--white);
-            padding: 32px;
-            border-radius: var(--border-radius);
-            margin-top: 24px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .grand-total::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -25%;
-            width: 150px;
-            height: 150px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: pulseGrand 3s ease-in-out infinite;
-        }
-
-        @keyframes pulseGrand {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 0.1;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.2;
-            }
-        }
-
-        .grand-total .totals-label,
-        .grand-total .totals-value {
-            color: var(--white);
-            font-size: 28px;
-            font-weight: 900;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .action-bar {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 50px;
-            padding-top: 40px;
-            border-top: 2px dashed var(--gray-300);
-        }
-
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .loading.show {
-            display: flex;
-        }
-
-        .spinner-container {
-            text-align: center;
-            color: white;
-        }
-
-        .spinner {
-            width: 80px;
-            height: 80px;
-            border: 6px solid rgba(79, 70, 229, 0.3);
-            border-top: 6px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .success-message {
-            display: none;
-            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-            color: #166534;
-            padding: 20px 32px;
-            border-radius: var(--border-radius);
-            margin-bottom: 24px;
-            border: 2px solid #bbf7d0;
-            font-weight: 600;
-            box-shadow: var(--shadow-md);
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .success-message.show {
-            display: flex;
-            align-items: center;
-        }
-
-        .error-message {
-            display: none;
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            color: #dc2626;
-            padding: 20px 32px;
-            border-radius: var(--border-radius);
-            margin-bottom: 24px;
-            border: 2px solid #fecaca;
-            font-weight: 600;
-            box-shadow: var(--shadow-md);
-            animation: slideIn 0.5s ease;
-        }
-
-        .error-message.show {
-            display: flex;
-            align-items: center;
-        }
-
-        .discount-section {
-            display: none;
-            margin-top: 16px;
-            padding: 20px;
-            background: linear-gradient(135deg, #fef3c7, #fed7aa);
-            border-radius: 8px;
-            border-left: 4px solid var(--warning-color);
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .discount-section.show {
-            display: block;
-        }
-
-        .interactive-card {
-            transition: var(--transition);
-        }
-
-        .interactive-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .whatsapp-section {
-            background: #25d366;
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-xl);
-            padding: 40px;
-            margin-top: 32px;
-            color: var(--white);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .whatsapp-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -25%;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .whatsapp-controls {
-            display: grid;
-            gap: 24px;
-        }
-
-        .whatsapp-message-area {
-            display: grid;
-            gap: 16px;
-        }
-
-        .whatsapp-preview {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .whatsapp-actions {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .invoice-preview {
-            display: none;
-            background: var(--white);
-            padding: 60px;
-            margin: 32px 0;
-            border-radius: 0;
-            box-shadow: none;
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--dark-color);
-        }
-
-        .invoice-preview.show {
-            display: block;
-        }
-
-        /* Updated Invoice Header Styles */
-        .invoice-header {
-            display: grid; /* Changed to grid */
-            grid-template-columns: 1fr 1fr; /* Two columns */
-            gap: 40px; /* Adjust gap as needed */
-            align-items: start; /* Align items to the start of the grid area */
-            margin-bottom: 50px;
-            padding-bottom: 30px;
-            border-bottom: 3px solid var(--primary-color);
-        }
-
-        .invoice-company-info {
-            text-align: left; /* Ensure left alignment */
-        }
-
-        .invoice-company-info h1 {
-            font-family: 'Montserrat', sans-serif; /* Added Montserrat font */
-            font-size: 36px;
-            font-weight: 900;
-            color: black;
-            margin-bottom: 16px;
-        }
-
-        .invoice-company-info p {
-            color: var(--black);
-            margin-bottom: 8px;
-            font-size: 16px;
-            font-weight: 500;
-        }
-        
-        .invoice-company-info p strong{
-            color: var(--black);
-    
-        }
-
-
-        .invoice-title {
-            font-size: 48px;
-            font-weight: 900;
-            color: var(--primary-color);
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .invoice-meta-info {
-            text-align: right; /* Align to the right */
-        }
-
-        .invoice-meta-info p {
-            font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--dark-color); /* Ensure text color is dark */
-        }
-
-        .invoice-meta-info p strong { /* Target the labels for color change */
-            color: var(--dark-color); /* Change to black/dark color */
-        }
-
-        .invoice-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 50px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .invoice-table th {
-            background: var(--gradient-primary);
-            color: var(--white);
-            padding: 20px 16px;
-            text-align: left;
-            font-weight: 700;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        /* Specific header text color */
-        .invoice-table th.col-category, 
-        .invoice-table th.col-item,
-        .invoice-table th.col-manual-name {
-            color: var(--white) !important;
-        }
-
-        .invoice-table td {
-            padding: 16px;
-            border-bottom: 1px solid var(--gray-200);
-            font-size: 15px;
-            color: var(--dark-color);
-        }
-
-        .invoice-table tr:nth-child(even) {
-            background: #fafafa;
-        }
-
-        .invoice-totals {
-            margin-left: auto;
-            width: 350px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .invoice-totals table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .invoice-totals tr:last-child {
-            background: var(--gradient-primary);
-            color: var(--white);
-        }
-
-        .invoice-totals tr:last-child td {
-            padding: 20px 16px;
-            font-weight: 800;
-            font-size: 20px;
-        }
-
-        .invoice-totals td {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--gray-200);
-            color: var(--dark-color);
-        }
-
-        .invoice-footer {
-            margin-top: 80px;
-            padding-top: 30px;
-            border-top: 2px dashed var(--gray-300);
-            color: var(--gray-600);
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .invoice-footer h3 {
-            color: var(--primary-color);
-            font-size: 24px;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-
-        .invoice-logo {
-            max-width: 250px; /* Adjusted size */
-            max-height: 150px; /* Adjusted size */
-            object-fit: contain;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        /* Updated Invoice Notes Section - Removed fixed height constraints */
-        .invoice-notes {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            border: 2px solid var(--gray-200);
-            border-radius: var(--border-radius);
-            padding: 24px;
-            margin-top: 40px;
-            margin-bottom: 40px;
-            /* Removed min-height/max-height to allow content to expand */
-        }
-
-        .invoice-notes h4 {
-            color: var(--primary-color);
-            font-size: 18px;
-            margin-bottom: 16px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .invoice-notes p {
-            color: var(--dark-color);
-            line-height: 1.6;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            /* Ensure these are present for proper text wrapping */
-        }
-
-        .invoice-customer {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 50px;
-        }
-
-        .invoice-customer h3 {
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            font-size: 20px;
-        }
-
-        .invoice-customer p {
-            margin-bottom: 12px;
-            color: var(--dark-color);
-        }
-        
-        /* Product Entry Mode Toggle */
-        .entry-mode-toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 24px;
-            background: var(--white);
-            padding: 16px;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--gray-200);
-            box-shadow: var(--shadow-md);
-        }
-
-        .entry-mode-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-
-        .entry-mode-toggle label {
-            font-weight: 600;
-            color: var(--gray-700);
-            cursor: pointer;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-
-        .entry-mode-switch {
-            position: relative;
-            display: inline-block;
-            width: 110px;
-            height: 36px;
-            background-color: var(--gray-100);
-            border-radius: 18px;
-            cursor: pointer;
-        }
-
-        .switch-button {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 50px;
-            height: 28px;
-            background: var(--gradient-primary);
-            border-radius: 14px;
-            transition: var(--transition);
-            box-shadow: var(--shadow-md);
-        }
-
-        #entryModeToggle:checked ~ .entry-mode-switch .switch-button {
-            transform: translateX(52px);
-        }
-        
-        /* Modal Styles for Category Management */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-        }
-
-        .modal-container {
-            background: var(--white);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-xl);
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            animation: slideUp 0.4s ease;
-        }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 32px;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .modal-header h3 {
-            font-size: 24px;
-            color: var(--dark-color);
-        }
-
-        .modal-body {
-            padding: 32px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .category-item {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--border-radius);
-            margin-bottom: 24px;
-            padding: 24px;
-            transition: var(--transition);
-        }
-        .category-item:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary-color);
-        }
-        
-        .category-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
-        .category-name-view, .item-name-view {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-grow: 1;
-        }
-        
-        .category-name-view span, .item-name-view span {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-        .item-name-view span {
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--dark-color);
-        }
-        
-        .item-list {
-            list-style: none;
-            padding-left: 20px;
-            margin-bottom: 16px;
-        }
-        
-        .item-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--gray-100);
-        }
-        
-        .add-item-form, .add-category-form, .edit-form {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
-        
-        .action-icon {
-            cursor: pointer;
-            color: var(--gray-600);
-            transition: var(--transition);
-        }
-        .action-icon:hover {
-            color: var(--primary-color);
-        }
-        .action-icon.delete:hover {
-            color: var(--danger-color);
-        }
-
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .wp-billing-container {
-                padding: 16px;
-            }
-
-            .company-branding {
-                grid-template-columns: 1fr;
-                gap: 24px;
-            }
-
-            .logo-upload {
-                width: 100%;
-                max-width: 240px;
-                margin: 0 auto;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .invoice-meta {
-                grid-template-columns: 1fr;
-            }
-
-            .customer-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .scroll-indicator {
-                display: block;
-            }
-
-            .table-header th {
-                padding: 16px 12px;
-                font-size: 12px;
-            }
-
-            .table-cell {
-                padding: 16px 12px;
-            }
-
-            .table-input {
-                min-width: 100px;
-                padding: 10px 12px;
-                font-size: 13px;
-            }
-
-            .action-bar {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-
-            .invoice-header {
-                grid-template-columns: 1fr;
-                gap: 24px;
-                text-align: center;
-            }
-            .invoice-company-info, .invoice-meta-info {
-                text-align: center;
-            }
-
-
-            .invoice-title {
-                font-size: 32px;
-            }
-
-            .whatsapp-actions {
-                flex-direction: column;
-            }
-
-            .gst-rates {
-                grid-template-columns: 1fr;
-            }
-
-            .note-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .note-actions .btn {
-                max-width: none;
-            }
-
-            .invoice-customer {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .section-title {
-                font-size: 24px;
-            }
-            .modal-header h3 {
-                font-size: 20px;
-            }
-            .modal-header .btn.btn-icon-only {
-                width: 36px;
-                height: 36px;
-                min-width: 36px;
-            }
-
-            .invoice-company-info h1 {
-                font-size: 28px;
-            }
-
-            .grand-total .totals-label,
-            .grand-total .totals-value {
-                font-size: 20px;
-            }
-
-            .product-table {
-                min-width: 800px;
-            }
-
-            .table-input {
-                min-width: 90px;
-                padding: 8px 10px;
-            }
-            .entry-mode-toggle-container {
-                gap: 12px;
-                justify-content: center;
-                padding: 12px;
-            }
-             .entry-mode-toggle label {
-                font-size: 13px;
-            }
-            .entry-mode-switch {
-                width: 90px;
-                height: 34px;
-            }
-            .switch-button {
-                width: 40px;
-                height: 26px;
-            }
-            #entryModeToggle:checked ~ .entry-mode-switch .switch-button {
-                transform: translateX(46px);
-            }
-
-            .add-item-form, .add-category-form, .edit-form {
-                flex-direction: column;
-            }
-        }
-    </style>
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/invoice.css" />
+    <link rel="stylesheet" href="css/print.css" />
 </head>
 
-<body data-rsssl=1>
+<body>
     <div class="wp-billing-container">
-        <!-- Enhanced Success Message -->
+
+        <!-- Success Message -->
         <div class="success-message" id="successMessage">
             <span class="material-icons" style="margin-right: 12px;">check_circle</span>
-            <span id="successText">Invoice generated and downloaded successfully!</span>
+            <span id="successText">Invoice generated successfully!</span>
         </div>
 
         <!-- Error Message -->
@@ -1537,7 +42,9 @@
             <span id="errorText">Please fill in all required fields</span>
         </div>
 
-        <!-- Enhanced Header Section -->
+        <!-- ============================
+             SECTION 1: Company Header
+             ============================ -->
         <div class="header interactive-card">
             <div class="company-branding">
                 <div class="logo-section">
@@ -1545,7 +52,8 @@
                         <input type="file" id="logoInput" accept="image/*" onchange="handleLogoUpload(event)" />
                         <div id="logoContent">
                             <span class="material-icons" style="font-size: 52px; color: var(--secondary-color);">cloud_upload</span>
-                            <p style="margin-top: 12px; color: var(--gray-600); font-size: 14px; text-align: center; font-weight: 600;">Click to upload company logo</p>
+                            <p style="margin-top: 12px; color: var(--gray-600); font-size: 14px; text-align: center; font-weight: 600;">
+                                Click to upload company logo</p>
                         </div>
                     </div>
                 </div>
@@ -1553,26 +61,47 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Company Name</label>
-                            <input type="text" class="form-input" id="companyName" placeholder="Enter your company name" />
+                            <input type="text" class="form-input" id="companyName" placeholder="Enter company name" />
                         </div>
+                        <div class="form-group">
+                            <label class="form-label">Company Tagline (Optional)</label>
+                            <input type="text" class="form-input" id="companyTagline" placeholder="e.g. OUTDOOR ADVERTISING" />
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Phone Number</label>
                             <input type="tel" class="form-input" id="companyPhone" placeholder="Enter phone number" />
                         </div>
+                        <div class="form-group">
+                            <label class="form-label">UPI ID for Payment (Optional)</label>
+                            <input type="text" class="form-input" id="companyUPI" placeholder="e.g. business@okaxis" />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Company Address</label>
-                        <textarea
-                            class="form-input form-textarea"
-                            id="companyAddress"
-                            placeholder="Enter complete company address with city and postal code"
-                        ></textarea>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Company GST Number</label>
+                            <input type="text" class="form-input" id="companyGST" placeholder="e.g. 37AGOPG1150H1ZJ" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">HSN/SAC Code</label>
+                            <input type="text" class="form-input" id="companyHSN" placeholder="e.g. 998361" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="form-label">Company Address</label>
+                            <textarea class="form-input form-textarea" id="companyAddress" style="height: 48px;"
+                                placeholder="Enter complete address with city and postal code"></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Enhanced Invoice Details Section -->
+        <!-- ============================
+             SECTION 2: Invoice Details
+             ============================ -->
         <div class="invoice-section interactive-card">
             <h2 class="section-title">
                 <span class="material-icons section-icon">receipt_long</span>
@@ -1585,22 +114,26 @@
                     <input type="text" class="form-input" id="customerName" placeholder="Enter customer full name" required />
                 </div>
                 <div class="form-group">
+                    <label class="form-label">Customer GST Number</label>
+                    <input type="text" class="form-input" id="customerGST" placeholder="Customer GST number" />
+                </div>
+                <div class="form-group">
                     <label class="form-label">Mobile Number<span style="color: var(--danger-color);">*</span></label>
-                    <input type="tel" class="form-input" id="customerMobile" placeholder="Enter mobile number with country code" required />
+                    <input type="tel" class="form-input" id="customerMobile" placeholder="Enter mobile number" required />
                 </div>
                 <div class="form-group">
                     <label class="form-label">Email Address</label>
                     <input type="email" class="form-input" id="customerEmail" placeholder="Enter email address" />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Location</label>
+                    <label class="form-label">Location / City</label>
                     <input type="text" class="form-input" id="customerLocation" placeholder="Enter customer location" />
                 </div>
             </div>
 
             <div class="invoice-meta">
                 <div class="form-group">
-                    <label class="form-label">Invoice ID</label>
+                    <label class="form-label">Invoice Number</label>
                     <input type="text" class="form-input" id="invoiceId" placeholder="Auto-generated" readonly />
                 </div>
                 <div class="form-group">
@@ -1608,30 +141,75 @@
                     <input type="date" class="form-input" id="invoiceDate" required />
                 </div>
             </div>
-        </div>
-
-        <!-- Enhanced Products Section -->
-        <div class="invoice-section product-section interactive-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
-                <h2 class="section-title" style="margin-bottom: 0;">
-                    <span class="material-icons section-icon">inventory</span>
-                    Product Details
-                </h2>
-                <button class="btn btn-secondary" onclick="openCategoryModal()">
-                    <span class="material-icons">category</span>
-                    Manage Categories
-                </button>
-            </div>
-
-            <div class="entry-mode-toggle-container" style="margin-top: 32px;">
-                <div class="entry-mode-toggle">
-                    <label for="entryModeToggle">Manual Entry</label>
-                    <input type="checkbox" id="entryModeToggle" onchange="toggleEntryMode()" hidden>
-                    <label for="entryModeToggle" class="entry-mode-switch"><div class="switch-button"></div></label>
-                    <label for="entryModeToggle">Category-Based</label>
+            <div class="form-row-3" style="margin-top: 24px;">
+                <div class="form-group">
+                    <label class="form-label">Campaign Start Date</label>
+                    <input type="date" class="form-input" id="campaignStart" onchange="autoUpdateCampaignText()" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Campaign End Date</label>
+                    <input type="date" class="form-input" id="campaignEnd" onchange="autoUpdateCampaignText()" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Campaign Description (Editable)</label>
+                    <input type="text" class="form-input" id="campaignText" placeholder="e.g. CAMPAIGN: 05.07.2026 TO 04.07.2026" />
                 </div>
             </div>
+        </div>
 
+        <!-- ============================
+             SECTION 3: PDF Appearance Settings
+             ============================ -->
+        <div class="invoice-section interactive-card">
+            <h2 class="section-title">
+                <span class="material-icons section-icon">tune</span>
+                PDF Appearance
+            </h2>
+
+            <div class="pdf-settings-panel">
+                <div class="form-group">
+                    <label class="form-label">Font Family</label>
+                    <select class="form-input" id="pdfFontFamily" onchange="onFontSettingChange()">
+                        <option value="'Poppins', sans-serif">Poppins (Default)</option>
+                        <option value="'Inter', sans-serif">Inter</option>
+                        <option value="'Roboto', sans-serif">Roboto</option>
+                        <option value="'Outfit', sans-serif">Outfit</option>
+                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Heading & Tagline Size</label>
+                    <select class="form-input" id="pdfHeaderFontScale" onchange="onFontSettingChange()">
+                        <option value="0.85">Compact</option>
+                        <option value="1" selected>Default</option>
+                        <option value="1.15">Large</option>
+                        <option value="1.3">Extra Large</option>
+                        <option value="1.5">Huge (1.5x)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Overall Text Size (Content)</label>
+                    <select class="form-input" id="pdfBodyFontScale" onchange="onFontSettingChange()">
+                        <option value="0.85">Compact</option>
+                        <option value="1" selected>Default</option>
+                        <option value="1.15">Large</option>
+                        <option value="1.3">Extra Large</option>
+                        <option value="1.5">Huge (1.5x)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================
+             SECTION 4: Hoarding / Product Details
+             ============================ -->
+        <div class="invoice-section product-section interactive-card">
+            <h2 class="section-title" style="margin-bottom: 24px;">
+                <span class="material-icons section-icon">inventory</span>
+                Hoarding Details
+            </h2>
 
             <!-- Mobile Scroll Indicator -->
             <div class="scroll-indicator" id="scrollIndicator">
@@ -1642,18 +220,18 @@
             <div class="product-table-container">
                 <table class="product-table">
                     <thead class="table-header" id="productTableHeader">
-                       <!-- Header content is now generated dynamically by JavaScript -->
+                        <!-- Generated by JS -->
                     </thead>
                     <tbody id="productTableBody">
-                       <!-- Body content is now generated dynamically by JavaScript -->
+                        <!-- Generated by JS -->
                     </tbody>
                 </table>
             </div>
 
-            <div style="margin-top: 32px; display: flex; gap: 16px; flex-wrap: wrap">
+            <div style="margin-top: 24px; display: flex; gap: 16px; flex-wrap: wrap">
                 <button class="btn btn-secondary" onclick="addProductRow()">
                     <span class="material-icons">add</span>
-                    Add Product
+                    Add Row
                 </button>
                 <button class="btn btn-danger" onclick="removeLastRow()">
                     <span class="material-icons">remove</span>
@@ -1662,63 +240,199 @@
             </div>
         </div>
 
-        <!-- Enhanced Note Section -->
+        <!-- ============================
+             SECTION 5: Service Charges
+             ============================ -->
+        <div class="invoice-section interactive-card">
+            <h2 class="section-title">
+                <span class="material-icons section-icon">build</span>
+                Service Charges
+            </h2>
+            <p style="color: var(--gray-600); margin-bottom: 20px; font-size: 14px;">
+                <span class="material-icons" style="font-size: 16px; vertical-align: text-bottom; margin-right: 4px;">info</span>
+                Add mounting, installation, flex, transportation, or other charges
+            </p>
+
+            <!-- Service Name Suggestions -->
+            <datalist id="serviceNameSuggestions">
+                <option value="Mounting Charges">
+                <option value="Installation Charges">
+                <option value="Flex Charges">
+                <option value="Transportation">
+                <option value="Printing Charges">
+                <option value="Design Charges">
+                <option value="Removal Charges">
+                <option value="Other Charges">
+            </datalist>
+
+            <div class="service-table-container">
+                <table class="service-table">
+                    <thead class="table-header">
+                        <tr>
+                            <th style="width: 60px;">S.No</th>
+                            <th>Service Name</th>
+                            <th style="width: 120px; text-align: center;">Exclude GST</th>
+                            <th style="width: 180px;">Amount (₹)</th>
+                            <th style="width: 60px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="serviceTableBody">
+                        <!-- Generated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; gap: 16px; flex-wrap: wrap">
+                <button class="btn btn-warning" onclick="addServiceChargeRow()">
+                    <span class="material-icons">add</span>
+                    Add Service Charge
+                </button>
+                <button class="btn btn-danger" onclick="removeLastServiceRow()">
+                    <span class="material-icons">remove</span>
+                    Remove Last
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================
+             SECTION 6: Notes & Terms
+             ============================ -->
         <div class="note-section interactive-card">
             <h2 class="section-title">
                 <span class="material-icons section-icon">note_alt</span>
                 Notes & Terms
             </h2>
-            
+
             <div class="note-content">
                 <p style="color: var(--gray-600); margin-bottom: 16px; font-style: italic;">
                     <span class="material-icons" style="font-size: 16px; vertical-align: text-bottom; margin-right: 4px;">info</span>
-                    Add notes, terms & conditions, or special instructions that will appear on the invoice
+                    Add notes, terms & conditions, or special instructions
                 </p>
-                
+
                 <div class="note-display" id="noteDisplay">
                     <div class="empty">
                         <span class="material-icons" style="font-size: 48px; color: var(--gray-400); margin-bottom: 16px;">note_add</span>
                         <div>
                             <p>No notes added yet</p>
-                            <p style="font-size: 14px; margin-top: 8px;">Click "Add Note" to include terms, conditions, or special instructions</p>
+                            <p style="font-size: 14px; margin-top: 8px;">Click "Add Note" to include terms or conditions</p>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="note-editor" id="noteEditor">
-                    <textarea 
-                        class="note-textarea" 
-                        id="noteTextarea" 
-                        placeholder="Enter your notes, terms & conditions, special instructions, payment terms, warranty information, etc."
-                        oninput="updateNotePreview()"
-                    ></textarea>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px; background: var(--gray-100); padding: 6px; border-radius: 6px; border: 1px solid var(--gray-200); flex-wrap: wrap;">
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="formatNoteText('bold')" style="padding: 4px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                            <span class="material-icons" style="font-size: 16px;">format_bold</span> Bold
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="formatNoteText('italic')" style="padding: 4px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                            <span class="material-icons" style="font-size: 16px;">format_italic</span> Italic
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="formatNoteText('number')" style="padding: 4px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                            <span class="material-icons" style="font-size: 16px;">format_list_numbered</span> Numbered
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="formatNoteText('bullet')" style="padding: 4px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                            <span class="material-icons" style="font-size: 16px;">format_list_bulleted</span> Bullets
+                        </button>
+                    </div>
+                    <textarea class="note-textarea" id="noteTextarea"
+                        placeholder="Enter terms, conditions, special instructions, payment terms, etc."></textarea>
                 </div>
-                
+
                 <div class="note-actions" id="noteActions">
                     <button class="btn btn-primary" onclick="toggleNoteEdit()" id="editNoteBtn">
-                        <span class="material-icons">edit</span>
-                        Add Note
+                        <span class="material-icons">edit</span> Add Note
                     </button>
                     <button class="btn btn-secondary" onclick="clearNote()" id="clearNoteBtn" style="display: none;">
-                        <span class="material-icons">clear</span>
-                        Clear Note
+                        <span class="material-icons">clear</span> Clear Note
                     </button>
                 </div>
-                
+
                 <div class="note-actions editing" id="editingActions" style="display: none;">
                     <button class="btn btn-success" onclick="saveNote()">
-                        <span class="material-icons">save</span>
-                        Save Note
+                        <span class="material-icons">save</span> Save Note
                     </button>
                     <button class="btn btn-secondary" onclick="cancelEditNote()">
-                        <span class="material-icons">cancel</span>
-                        Cancel
+                        <span class="material-icons">cancel</span> Cancel
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Enhanced Totals Section with Dynamic GST -->
+        <!-- ============================
+             SECTION 7: Bank Details
+             ============================ -->
+        <div class="invoice-section interactive-card">
+            <h2 class="section-title">
+                <span class="material-icons section-icon">account_balance</span>
+                Bank Details
+            </h2>
+
+            <div class="bank-details-grid">
+                <div class="form-group">
+                    <label class="form-label">Account Holder Name</label>
+                    <input type="text" class="form-input" id="bankHolderName" placeholder="e.g. DEVI ADS" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bank Name</label>
+                    <input type="text" class="form-input" id="bankName" placeholder="e.g. Karur Vysya Bank" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Number</label>
+                    <input type="text" class="form-input" id="bankAccountNo" placeholder="e.g. 1405115000002402" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">IFSC Code</label>
+                    <input type="text" class="form-input" id="bankIFSC" placeholder="e.g. KVBL0001405" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Branch</label>
+                    <input type="text" class="form-input" id="bankBranch" placeholder="e.g. Main Branch, Kurnool(AP)" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">PAN Number</label>
+                    <input type="text" class="form-input" id="bankPAN" placeholder="e.g. AGOPG1105H" />
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================
+             SECTION 8: Digital Signature
+             ============================ -->
+        <div class="invoice-section interactive-card">
+            <h2 class="section-title">
+                <span class="material-icons section-icon">draw</span>
+                Digital Signature
+            </h2>
+            <p style="color: var(--gray-600); margin-bottom: 20px; font-size: 14px;">
+                <span class="material-icons" style="font-size: 16px; vertical-align: text-bottom; margin-right: 4px;">info</span>
+                Upload a signature image (PNG/JPG). It will be saved permanently and appear on every invoice.
+            </p>
+
+            <div style="display: flex; align-items: start; gap: 20px; flex-wrap: wrap;">
+                <div class="signature-upload-area" onclick="document.getElementById('signatureInput').click()">
+                    <input type="file" id="signatureInput" accept="image/png,image/jpeg" onchange="handleSignatureUpload(event)" />
+                    <div id="signatureContent">
+                        <span class="material-icons" style="font-size: 36px; color: var(--gray-400);">draw</span>
+                        <p style="margin-top: 8px; color: var(--gray-600); font-size: 12px; text-align: center;">
+                            Click to upload signature (PNG/JPG)
+                        </p>
+                    </div>
+                </div>
+                <button class="btn btn-danger" id="removeSignatureBtn" onclick="removeSignature()" style="display: none;">
+                    <span class="material-icons">delete</span> Remove Signature
+                </button>
+            </div>
+            
+            <div class="form-group" style="margin-top: 24px; max-width: 300px;">
+                <label class="form-label">Signature Size Scale</label>
+                <input type="range" id="signatureScale" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSignatureScaleDisplay(this.value)" />
+                <span id="signatureScaleDisplay" style="font-size: 14px; color: var(--gray-600); font-style: italic; margin-top: 4px; display: inline-block;">Scale: 1.0x (Default)</span>
+            </div>
+        </div>
+
+        <!-- ============================
+             SECTION 9: Invoice Summary / Totals
+             ============================ -->
         <div class="totals-section interactive-card">
             <h2 class="section-title">
                 <span class="material-icons section-icon">calculate</span>
@@ -1737,7 +451,7 @@
                         Enable GST Calculation
                     </span>
                 </div>
-                
+
                 <div class="gst-rates" id="gstRatesSection">
                     <div class="gst-rate-input">
                         <label for="sgstRate">SGST Rate (%)</label>
@@ -1748,7 +462,7 @@
                         <input type="number" id="cgstRate" value="9" min="0" max="50" step="0.01" onchange="calculateGrandTotal()" />
                     </div>
                 </div>
-                
+
                 <p style="margin-top: 16px; font-size: 14px; color: var(--gray-700); font-style: italic;">
                     <span class="material-icons" style="font-size: 16px; vertical-align: text-bottom; margin-right: 4px;">info</span>
                     Configure SGST and CGST rates as per your business requirements
@@ -1761,7 +475,15 @@
                     <span class="totals-value" id="subtotal" style="font-size: 20px; font-weight: 700; color: var(--primary-color)">₹0.00</span>
                 </div>
 
-                <!-- Dynamic GST Rows -->
+                <div class="totals-row" id="serviceChargesRow" style="display: none;">
+                    <span class="totals-label" style="font-size: 14px; color: var(--gray-600);">
+                        <span class="material-icons" style="font-size: 16px; vertical-align: text-bottom; margin-right: 4px;">build</span>
+                        incl. Service Charges
+                    </span>
+                    <span class="totals-value" id="serviceChargesDisplay" style="font-size: 16px; font-weight: 600; color: var(--warning-color);">₹0.00</span>
+                </div>
+
+                <!-- GST Rows -->
                 <div class="totals-row" id="sgstRow" style="display: none;">
                     <span class="totals-label" style="font-size: 16px">SGST (<span id="sgstRateDisplay">9%</span>)</span>
                     <span class="totals-value" id="sgstAmount" style="font-size: 18px; font-weight: 600">₹0.00</span>
@@ -1770,6 +492,11 @@
                 <div class="totals-row" id="cgstRow" style="display: none;">
                     <span class="totals-label" style="font-size: 16px">CGST (<span id="cgstRateDisplay">9%</span>)</span>
                     <span class="totals-value" id="cgstAmount" style="font-size: 18px; font-weight: 600">₹0.00</span>
+                </div>
+
+                <div class="totals-row" id="totalGstRow" style="display: none;">
+                    <span class="totals-label" style="font-size: 16px; font-weight: 700;">Total GST</span>
+                    <span class="totals-value" id="totalGstAmount" style="font-size: 18px; font-weight: 700; color: var(--danger-color);">₹0.00</span>
                 </div>
 
                 <div class="grand-total">
@@ -1781,7 +508,9 @@
             </div>
         </div>
 
-        <!-- Enhanced Action Bar -->
+        <!-- ============================
+             ACTION BAR
+             ============================ -->
         <div class="action-bar">
             <button class="btn btn-primary" onclick="generateInvoice()">
                 <span class="material-icons">picture_as_pdf</span>
@@ -1801,34 +530,29 @@
             </button>
         </div>
 
-        <!-- Enhanced WhatsApp Integration Section -->
+        <!-- ============================
+             WhatsApp Section
+             ============================ -->
         <div class="whatsapp-section interactive-card" id="whatsappSection" style="display:none;">
             <h2 class="section-title" style="color: var(--white); margin-bottom: 24px;">
                 <span class="material-icons section-icon" style="background: rgba(255, 255, 255, 0.2); color: var(--white)">chat</span>
                 Share Invoice via WhatsApp
             </h2>
-            <p style="margin-bottom: 24px; opacity: 0.9; font-size: 16px;">Send complete invoice details directly to customer's WhatsApp</p>
+            <p style="margin-bottom: 24px; opacity: 0.9; font-size: 16px;">Send invoice details directly to customer's WhatsApp</p>
 
             <div class="whatsapp-controls">
                 <div class="whatsapp-message-area">
                     <div class="form-group">
                         <label class="form-label" style="color: rgba(255, 255, 255, 0.9)">Custom Message (Optional)</label>
-                        <textarea
-                            class="form-input"
-                            id="whatsappMessage"
-                            placeholder="Add your personal message here..."
+                        <textarea class="form-input" id="whatsappMessage" placeholder="Add your personal message..."
                             style="background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.3); color: var(--white)"
-                            rows="2"
-                            oninput="updateWhatsAppPreview()"
-                        ></textarea>
+                            rows="2" oninput="updateWhatsAppPreview()"></textarea>
                     </div>
 
                     <div class="whatsapp-preview" id="whatsappPreview">
                         <strong>Message Preview:</strong><br />
-                        <div
-                            id="whatsappPreviewText"
-                            style="background: rgba(255, 255, 255, 0.1); padding: 16px; border-radius: 8px; margin-top: 12px; font-family: monospace; font-size: 14px; line-height: 1.6; border-left: 4px solid rgba(255, 255, 255, 0.4)"
-                        >
+                        <div id="whatsappPreviewText"
+                            style="background: rgba(255, 255, 255, 0.1); padding: 16px; border-radius: 8px; margin-top: 12px; font-family: monospace; font-size: 14px; line-height: 1.6; border-left: 4px solid rgba(255, 255, 255, 0.4)">
                             Complete invoice details will appear here
                         </div>
                     </div>
@@ -1836,22 +560,21 @@
 
                 <div class="whatsapp-actions">
                     <button class="btn btn-whatsapp" onclick="sendWhatsAppMessage()">
-                        <span class="material-icons">send</span>
-                        Send to WhatsApp
+                        <span class="material-icons">send</span> Send to WhatsApp
                     </button>
                     <button class="btn btn-whatsapp" onclick="copyWhatsAppMessage()">
-                        <span class="material-icons">content_copy</span>
-                        Copy Message
+                        <span class="material-icons">content_copy</span> Copy Message
                     </button>
                     <button class="btn btn-whatsapp" onclick="previewFullInvoice()">
-                        <span class="material-icons">visibility</span>
-                        Preview Full Invoice
+                        <span class="material-icons">visibility</span> Preview Full Invoice
                     </button>
                 </div>
             </div>
         </div>
-    </div>
 
+    </div><!-- end .wp-billing-container -->
+
+    <!-- Loading Overlay -->
     <div class="loading" id="loadingAnimation">
         <div class="spinner-container">
             <div class="spinner"></div>
@@ -1860,1413 +583,146 @@
         </div>
     </div>
 
-    <!-- Category Management Modal -->
-    <div class="modal-overlay" id="categoryModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3>Manage Categories & Items</h3>
-                <button class="btn btn-icon-only btn-secondary" onclick="closeCategoryModal()">
-                    <span class="material-icons">close</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="add-category-form">
-                    <input type="text" id="newCategoryName" class="form-input" placeholder="Enter new category name">
-                    <button class="btn btn-primary" onclick="addCategory()">Add Category</button>
-                </div>
-                <hr style="margin: 24px 0; border-color: var(--gray-100);">
-                <div id="categoryListContainer">
-                    <!-- Categories will be rendered here by JavaScript -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-
+    <!-- ============================================================
+         INVOICE PREVIEW (Hidden — used for PDF & on-screen preview)
+         ============================================================ -->
     <div class="invoice-preview" id="invoicePreview">
+
+        <!-- Header -->
         <div class="invoice-header">
+            <!-- Left: Company Info -->
             <div class="invoice-company-info">
-                <div id="previewLogo" style="margin-bottom: 15px"></div>
+                <div id="previewLogo" style="margin-bottom: 10px"></div>
                 <h1 id="previewCompanyName">Your Company Name</h1>
+                <p id="previewCompanyTagline" style="font-size: calc(17px * var(--inv-header-scale)); font-weight: 700; font-family: var(--inv-heading-font); letter-spacing: 1px; text-transform: uppercase; color: black; margin-bottom: 8px;"></p>
                 <p id="previewCompanyPhone"><strong>Phone:</strong> +91 XXXXXXXXXX</p>
                 <p id="previewCompanyAddress"><strong>Address:</strong> Company Address</p>
+                <div class="invoice-company-meta" id="previewCompanyMeta" style="display: none;"></div>
             </div>
-            <div class="invoice-meta-info">
-                <h2 class="invoice-title">INVOICE</h2>
-                <p><strong>Invoice ID:</strong> <span id="previewInvoiceId">INV-001</span></p>
-                <p><strong>Date:</strong> <span id="previewInvoiceDate">2024-01-01</span></p>
-                <p
-                    style="
-                        margin-top: 16px;
-                        padding: 12px;
-                        background: linear-gradient(135deg, #eff6ff, #dbeafe);
-                        border-radius: 8px;
-                        color: var(--primary-color);
-                        font-weight: 600;
-                    "
-                >
-                    <span class="material-icons" style="font-size: 18px; vertical-align: text-bottom; margin-right: 8px">info</span>
-                    Professional Invoice Document
-                </p>
+
+            <!-- Middle: QR Code -->
+            <div class="invoice-qr-section" id="previewQrSection" style="display: none;">
+                <img id="previewQrCode" src="" alt="UPI QR Code" />
+                <p class="qr-label">Scan to Pay via UPI</p>
+            </div>
+
+            <!-- Right: Invoice Title & Meta -->
+            <div class="invoice-right-panel">
+                <div class="invoice-meta-info">
+                    <h2 class="invoice-title">TAX INVOICE</h2>
+                    <p><strong>Invoice No:</strong> <span id="previewInvoiceId">INV-001</span></p>
+                    <p><strong>Date:</strong> <span id="previewInvoiceDate">01 January 2026</span></p>
+                </div>
+                <div class="invoice-bank-details" id="previewBankDetails" style="display: none;">
+                    <!-- Populated by JS -->
+                </div>
             </div>
         </div>
 
+        <!-- Campaign Details -->
+        <div id="previewCampaignRow" style="display: none; margin: -10px 0 15px 0; font-weight: 700; font-size: calc(14px * var(--inv-body-scale)); color: #dc2626; border-bottom: 2px solid var(--primary-color); padding-bottom: 8px;">
+            <span id="previewCampaignText">CAMPAIGN: 05.07.2026 TO 04.07.2026</span>
+        </div>
+
+        <!-- Bill To -->
         <div class="invoice-customer">
-            <div
-                style="
-                    background: rgba(79, 70, 229, 0.05);
-                    padding: 32px;
-                    border-radius: 12px;
-                    border-left: 4px solid var(--primary-color);
-                "
-            >
-                <h3>Bill To:</h3>
-                <p><strong id="previewCustomerName" style="font-size: 18px; color: var(--dark-color);">Customer Name</strong></p>
-                <p>
-                    <span class="material-icons" style="font-size: 16px; vertical-align: text-bottom; margin-right: 8px; color: var(--primary-color)">phone</span>
-                    <span id="previewCustomerMobile">+91 XXXXXXXXXX</span>
-                </p>
-                <p>
-                    <span class="material-icons" style="font-size: 16px; vertical-align: text-bottom; margin-right: 8px; color: var(--primary-color)">email</span>
-                    <span id="previewCustomerEmail">customer@example.com</span>
-                </p>
-                <p>
-                    <span class="material-icons" style="font-size: 16px; vertical-align: text-bottom; margin-right: 8px; color: var(--primary-color)">location_on</span>
-                    <span id="previewCustomerLocation">Customer Location</span>
-                </p>
+            <div class="invoice-customer-inner">
+                <h3>Bill To</h3>
+                <p style="font-size: calc(15px * var(--inv-scale)); font-weight: 700; color: var(--dark-color); margin-bottom: 6px;" id="previewCustomerName">Customer Name</p>
+                <div class="invoice-customer-details" id="previewCustomerDetails">
+                    <!-- Populated by JS -->
+                </div>
             </div>
         </div>
 
+        <!-- Product Table -->
         <table class="invoice-table" id="previewProductTable">
-            <thead id="previewProductTableHeader">
-                <!-- Preview header generated by JS -->
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Town</th>
+                    <th>Location</th>
+                    <th>Width</th>
+                    <th>Height</th>
+                    <th>Total Sq.Ft</th>
+                    <th>No. of Days</th>
+                    <th>Rate/Day</th>
+                    <th>Amount</th>
+                </tr>
             </thead>
             <tbody id="previewTableBody">
             </tbody>
         </table>
 
-        <div class="invoice-totals">
-            <table>
-                <tr id="previewSubtotalRow">
-                    <td>Subtotal</td>
-                    <td id="previewSubtotal">₹0.00</td>
-                </tr>
-                <tr id="previewSgstRow" style="display: none;">
-                    <td id="previewSgstLabel">SGST (9%)</td>
-                    <td id="previewSgst">₹0.00</td>
-                </tr>
-                <tr id="previewCgstRow" style="display: none;">
-                    <td id="previewCgstLabel">CGST (9%)</td>
-                    <td id="previewCgst">₹0.00</td>
-                </tr>
-                <tr>
-                    <td><strong>Grand Total</strong></td>
-                    <td id="previewGrandTotal"><strong>₹0.00</strong></td>
-                </tr>
-            </table>
+        <!-- Service Charges -->
+        <div class="invoice-service-charges" id="previewServiceCharges" style="display: none;">
+            <!-- Populated by JS -->
         </div>
 
-        <!-- Invoice Notes Section -->
-        <div class="invoice-notes" id="invoiceNotesSection" style="display: none;">
-            <h4>
-                <span class="material-icons" style="font-size: 18px; vertical-align: text-bottom;">note_alt</span>
-                Notes & Terms
-            </h4>
-            <p id="invoiceNotesContent"></p>
+        <!-- Notes + Totals Side by Side -->
+        <div class="invoice-bottom-layout">
+            <!-- Notes -->
+            <div class="invoice-notes" id="invoiceNotesSection" style="display: none;">
+                <h4>
+                    <span class="material-icons" style="font-size: 16px; vertical-align: text-bottom;">note_alt</span>
+                    Notes & Terms
+                </h4>
+                <p id="invoiceNotesContent"></p>
+            </div>
+
+            <!-- Totals -->
+            <div class="invoice-totals">
+                <table>
+                    <tr>
+                        <td>Subtotal</td>
+                        <td id="previewSubtotal">₹0.00</td>
+                    </tr>
+                    <tr id="previewSgstRow" style="display: none;">
+                        <td id="previewSgstLabel">SGST (9%)</td>
+                        <td id="previewSgst">₹0.00</td>
+                    </tr>
+                    <tr id="previewCgstRow" style="display: none;">
+                        <td id="previewCgstLabel">CGST (9%)</td>
+                        <td id="previewCgst">₹0.00</td>
+                    </tr>
+                    <tr id="previewTotalGstRow" class="total-gst-row" style="display: none;">
+                        <td><strong>Total GST</strong></td>
+                        <td id="previewTotalGst"><strong>₹0.00</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Grand Total</strong></td>
+                        <td id="previewGrandTotal"><strong>₹0.00</strong></td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
+        <!-- Signature -->
+        <div class="invoice-signature" id="previewSignature" style="display: none;">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- Footer -->
         <div class="invoice-footer">
             <h3>Thank you for your business!</h3>
-            <p>This is a computer-generated invoice and does not require a signature.</p>
             <p>For any queries, please contact us at the above mentioned details.</p>
         </div>
 
-    </div>
+    </div><!-- end .invoice-preview -->
+
+    <!-- ============================
+         JavaScript Modules (load order matters)
+         ============================ -->
+    <script src="js/utils.js"></script>
+    <script src="js/notes.js"></script>
+    <script src="js/signature.js"></script>
+    <script src="js/table.js"></script>
+    <script src="js/tax.js"></script>
+    <script src="js/form.js"></script>
+    <script src="js/preview.js"></script>
+    <script src="js/pdf.js"></script>
+    <script src="js/whatsapp.js"></script>
+    <script src="js/app.js"></script>
 
-    <script>
-        // === GLOBAL VARIABLES ===
-        let uploadedLogoFile = null;
-        let currentInvoiceData = null;
-        let savedNote = '';
-        let productEntryMode = 'manual'; // 'manual' or 'category'
-        let categoriesData = []; // Main data store for categories and items
-
-        // === INITIALIZATION ===
-        document.addEventListener('DOMContentLoaded', function() {
-            generateInvoiceId();
-            setTodayDate();
-            loadCategories();
-            renderProductTable();
-            calculateGrandTotal();
-            toggleGST();
-            loadSavedNote();
-        });
-        
-        // === CATEGORY MANAGEMENT (MODAL) ===
-        
-        function openCategoryModal() {
-            document.getElementById('categoryModal').classList.add('show');
-            renderCategoryList();
-        }
-
-        function closeCategoryModal() {
-            document.getElementById('categoryModal').classList.remove('show');
-        }
-
-        function loadCategories() {
-            try {
-                const savedCategories = localStorage.getItem('billingCategories');
-                if (savedCategories) {
-                    categoriesData = JSON.parse(savedCategories);
-                }
-            } catch (e) {
-                console.error("Error loading categories:", e);
-                categoriesData = [];
-            }
-        }
-
-        function saveCategories() {
-            try {
-                localStorage.setItem('billingCategories', JSON.stringify(categoriesData.map(c => ({...c, isEditing: false, items: c.items.map(i => ({...i, isEditing: false}))}))));
-                 showSuccess('Categories saved!', 2000);
-            } catch (e) {
-                console.error("Error saving categories:", e);
-                showError("Could not save categories.");
-            }
-        }
-        
-        function addCategory() {
-            const input = document.getElementById('newCategoryName');
-            const name = input.value.trim();
-            if (!name) {
-                showError('Please enter a category name.');
-                return;
-            }
-            categoriesData.push({ id: crypto.randomUUID(), name: name, items: [] });
-            input.value = '';
-            saveCategories();
-            renderCategoryList();
-        }
-
-        function deleteCategory(categoryId) {
-            if (confirm('Are you sure you want to delete this entire category and all its items?')) {
-                categoriesData = categoriesData.filter(cat => cat.id !== categoryId);
-                saveCategories();
-                renderCategoryList();
-            }
-        }
-        
-        function editCategory(categoryId) {
-            categoriesData.forEach(c => c.isEditing = (c.id === categoryId));
-            renderCategoryList();
-        }
-        
-        function cancelEditCategory(categoryId) {
-            categoriesData.forEach(c => { if(c.id === categoryId) c.isEditing = false });
-            renderCategoryList();
-        }
-
-        function saveCategory(categoryId) {
-            const input = document.querySelector(`.category-item[data-id="${categoryId}"] .edit-form input`);
-            const category = categoriesData.find(c => c.id === categoryId);
-            const newName = input.value.trim();
-
-            if (category && newName) {
-                category.name = newName;
-                category.isEditing = false;
-                saveCategories();
-                renderCategoryList();
-            } else {
-                showError('Category name cannot be empty.');
-            }
-        }
-
-
-        function addItemToCategory(categoryId) {
-            const input = document.getElementById(`newItemName-${categoryId}`);
-            const name = input.value.trim();
-            if (!name) {
-                showError('Please enter an item name.');
-                return;
-            }
-            const category = categoriesData.find(cat => cat.id === categoryId);
-            if (category) {
-                category.items.push({ id: crypto.randomUUID(), name: name });
-                input.value = '';
-                saveCategories();
-                renderCategoryList();
-            }
-        }
-
-        function deleteItem(categoryId, itemId) {
-            const category = categoriesData.find(cat => cat.id === categoryId);
-            if (category) {
-                category.items = category.items.filter(item => item.id !== itemId);
-                saveCategories();
-                renderCategoryList();
-            }
-        }
-        
-        function editItem(categoryId, itemId) {
-            const category = categoriesData.find(c => c.id === categoryId);
-            if(category) {
-                category.items.forEach(i => i.isEditing = (i.id === itemId));
-                renderCategoryList();
-            }
-        }
-        
-        function cancelEditItem(categoryId, itemId) {
-            const category = categoriesData.find(c => c.id === categoryId);
-            if(category) {
-                const item = category.items.find(i => i.id === itemId);
-                if(item) item.isEditing = false;
-                renderCategoryList();
-            }
-        }
-        
-        function saveItem(categoryId, itemId) {
-             const input = document.querySelector(`.item-list-item[data-item-id="${itemId}"] .edit-form input`);
-             const category = categoriesData.find(c => c.id === categoryId);
-             if (category) {
-                 const item = category.items.find(i => i.id === itemId);
-                 const newName = input.value.trim();
-                 if(item && newName) {
-                     item.name = newName;
-                     item.isEditing = false;
-                     saveCategories();
-                     renderCategoryList();
-                 } else {
-                     showError('Item name cannot be empty.');
-                 }
-             }
-        }
-
-
-        function renderCategoryList() {
-            const container = document.getElementById('categoryListContainer');
-            if (categoriesData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--gray-600);">No categories found. Add one above to get started.</p>`;
-                return;
-            }
-
-            container.innerHTML = categoriesData.map(cat => `
-                <div class="category-item" data-id="${cat.id}">
-                    ${cat.isEditing ? `
-                        <div class="edit-form">
-                            <input type="text" class="form-input" value="${cat.name}">
-                            <button class="btn btn-success" onclick="saveCategory('${cat.id}')">Save</button>
-                            <button class="btn btn-secondary" onclick="cancelEditCategory('${cat.id}')">Cancel</button>
-                        </div>
-                    ` : `
-                        <div class="category-header">
-                            <div class="category-name-view">
-                                <span>${cat.name}</span>
-                                <span class="material-icons action-icon" onclick="editCategory('${cat.id}')">edit</span>
-                            </div>
-                            <button class="btn btn-icon-only btn-danger" onclick="deleteCategory('${cat.id}')"><span class="material-icons">delete_forever</span></button>
-                        </div>
-                    `}
-                    <ul class="item-list">
-                        ${cat.items.map(item => `
-                            <li class="item-list-item" data-item-id="${item.id}">
-                                ${item.isEditing ? `
-                                    <div class="edit-form" style="width: 100%;">
-                                        <input type="text" class="form-input" value="${item.name}">
-                                        <button class="btn btn-success" onclick="saveItem('${cat.id}', '${item.id}')">Save</button>
-                                        <button class="btn btn-secondary" onclick="cancelEditItem('${cat.id}', '${item.id}')">Cancel</button>
-                                    </div>
-                                ` : `
-                                    <div class="item-name-view">
-                                        <span>${item.name}</span>
-                                        <div>
-                                            <span class="material-icons action-icon" onclick="editItem('${cat.id}', '${item.id}')">edit</span>
-                                            <span class="material-icons action-icon delete" onclick="deleteItem('${cat.id}', '${item.id}')">delete</span>
-                                        </div>
-                                    </div>
-                                `}
-                            </li>
-                        `).join('')}
-                    </ul>
-                    <div class="add-item-form">
-                        <input type="text" id="newItemName-${cat.id}" class="form-input" placeholder="Add new item/service">
-                        <button class="btn btn-success" onclick="addItemToCategory('${cat.id}')">Add Item</button>
-                    </div>
-                </div>
-            `).join('');
-            
-             // Ensure item-name-view children are spaced correctly
-            document.querySelectorAll('.item-name-view').forEach(el => {
-                el.style.display = 'flex';
-                el.style.justifyContent = 'space-between';
-                el.style.width = '100%';
-            });
-        }
-        
-        
-        // === PRODUCT TABLE & ENTRY MODE ===
-
-        function toggleEntryMode() {
-            const isCategoryMode = document.getElementById('entryModeToggle').checked;
-            productEntryMode = isCategoryMode ? 'category' : 'manual';
-            
-            // Clear table to prevent data conflicts when switching modes
-            const tableBody = document.getElementById('productTableBody');
-            if (tableBody.rows.length > 0 && Array.from(tableBody.rows).some(r => r.querySelector('.total-input')?.value > 0)) {
-                if (confirm('Switching modes will clear the product list. Continue?')) {
-                     renderProductTable();
-                } else {
-                    document.getElementById('entryModeToggle').checked = !isCategoryMode;
-                    productEntryMode = isCategoryMode ? 'manual' : 'category'; // revert
-                }
-            } else {
-                 renderProductTable();
-            }
-        }
-
-        function renderProductTable() {
-            const header = document.getElementById('productTableHeader');
-            const body = document.getElementById('productTableBody');
-            
-            if (productEntryMode === 'manual') {
-                header.innerHTML = `
-                    <tr>
-                        <th>S.No</th>
-                        <th class="col-manual-name">Product Name<span style="color: rgba(255,255,255,0.8);">*</span></th>
-                        <th>Quantity</th>
-                        <th>Price (₹)<span style="color: rgba(255,255,255,0.8);">*</span></th>
-                        <th>Total (₹)</th>
-                        <th>Actions</th>
-                    </tr>
-                `;
-            } else { // category mode
-                header.innerHTML = `
-                    <tr>
-                        <th>S.No</th>
-                        <th class="col-category">Category<span style="color: rgba(255,255,255,0.8);">*</span></th>
-                        <th class="col-item">Product/Service<span style="color: rgba(255,255,255,0.8);">*</span></th>
-                        <th>Quantity</th>
-                        <th>Price (₹)<span style="color: rgba(255,255,255,0.8);">*</span></th>
-                        <th>Total (₹)</th>
-                        <th>Actions</th>
-                    </tr>
-                `;
-            }
-            body.innerHTML = '';
-            addProductRow();
-            calculateGrandTotal();
-        }
-        
-        function populateCategoryDropdown(selectElement) {
-            selectElement.innerHTML = `<option value="">Select Category</option>`;
-            categoriesData.forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat.id;
-                option.textContent = cat.name;
-                selectElement.appendChild(option);
-            });
-        }
-        
-        function handleCategoryChange(categorySelect) {
-            const row = categorySelect.closest('tr');
-            const itemSelect = row.querySelector('.item-select');
-            const categoryId = categorySelect.value;
-
-            itemSelect.innerHTML = `<option value="">Select Item</option>`;
-            itemSelect.disabled = true;
-
-            if (categoryId) {
-                const category = categoriesData.find(cat => cat.id === categoryId);
-                if (category) {
-                    category.items.forEach(item => {
-                        const option = document.createElement('option');
-                        option.value = item.id;
-                        option.textContent = item.name;
-                        itemSelect.appendChild(option);
-                    });
-                    itemSelect.disabled = false;
-                }
-            }
-             calculateRowTotal(categorySelect);
-        }
-
-        function addProductRow() {
-            const tableBody = document.getElementById('productTableBody');
-            const rowCount = tableBody.children.length + 1;
-            
-            const newRow = document.createElement('tr');
-            newRow.className = 'table-row';
-            
-            let productCellHtml = '';
-            if (productEntryMode === 'manual') {
-                 productCellHtml = `
-                    <td class="table-cell" data-label="Product Name">
-                        <input type="text" class="table-input product-name" placeholder="Enter product name" onchange="calculateRowTotal(this)" required />
-                        <div class="discount-section">
-                            <label style="font-weight: 600; margin-bottom: 8px; display: block">Discount (%)</label>
-                            <input type="number" class="table-input discount-input" placeholder="0" min="0" max="100" onchange="calculateRowTotal(this.closest('tr').querySelector('.product-name'))" />
-                        </div>
-                    </td>
-                 `;
-            } else { // category mode
-                productCellHtml = `
-                    <td class="table-cell" data-label="Category">
-                        <select class="table-select category-select" onchange="handleCategoryChange(this)" required></select>
-                    </td>
-                    <td class="table-cell" data-label="Item">
-                        <select class="table-select item-select" onchange="calculateRowTotal(this)" required disabled>
-                            <option value="">Select Item</option>
-                        </select>
-                         <div class="discount-section">
-                            <label style="font-weight: 600; margin-bottom: 8px; display: block">Discount (%)</label>
-                            <input type="number" class="table-input discount-input" placeholder="0" min="0" max="100" onchange="calculateRowTotal(this.closest('tr').querySelector('.item-select'))" />
-                        </div>
-                    </td>
-                `;
-            }
-
-            newRow.innerHTML = `
-                <td class="table-cell" data-label="S.No">${rowCount}</td>
-                ${productCellHtml}
-                <td class="table-cell" data-label="Quantity">
-                    <input type="number" class="table-input quantity-input" placeholder="1" min="1" value="1" onchange="calculateRowTotal(this)" />
-                </td>
-                <td class="table-cell" data-label="Price">
-                    <input type="number" class="table-input price-input" placeholder="0.00" min="0" step="0.01" onchange="calculateRowTotal(this)" required />
-                </td>
-                <td class="table-cell" data-label="Total">
-                    <input type="number" class="table-input total-input" placeholder="0.00" readonly style="background: var(--gray-50)" />
-                </td>
-                <td class="table-cell" data-label="Actions">
-                    <button class="btn btn-secondary btn-icon-only" onclick="toggleDiscount(this)" title="Add Discount">
-                        <span class="material-icons">percent</span>
-                    </button>
-                </td>
-            `;
-            
-            tableBody.appendChild(newRow);
-            
-            if (productEntryMode === 'category') {
-                populateCategoryDropdown(newRow.querySelector('.category-select'));
-            }
-            
-            showSuccess('Product row added', 2000);
-        }
-        
-        // Logo upload handling
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                showError('Please select an image file only.');
-                return;
-            }
-
-            // Validate file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showError('File size must be less than 5MB.');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                uploadedLogoFile = e.target.result;
-                displayLogo(e.target.result);
-                showSuccess('Logo uploaded successfully!', 2000);
-            };
-
-            reader.onerror = function() {
-                showError('Error reading file. Please try again.');
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-        // Display logo in upload area
-        function displayLogo(imageSrc) {
-            const logoContent = document.getElementById('logoContent');
-            logoContent.innerHTML = `
-                <img src="${imageSrc}" alt="Company Logo" class="logo-preview" />
-                <p style="margin-top: 8px; color: var(--gray-600); font-size: 12px; text-align: center;">
-                    Click to change logo
-                </p>
-            `;
-        }
-
-        // Note functionality
-        function loadSavedNote() {
-            try {
-                savedNote = localStorage.getItem('billingSavedNote') || '';
-                if (savedNote) {
-                    displayNote();
-                    document.getElementById('clearNoteBtn').style.display = 'inline-flex';
-                }
-            } catch (error) {
-                console.error('Error loading saved note:', error);
-            }
-        }
-
-        function displayNote() {
-            const noteDisplay = document.getElementById('noteDisplay');
-            const editNoteBtn = document.getElementById('editNoteBtn');
-            
-            if (savedNote.trim()) {
-                noteDisplay.innerHTML = savedNote;
-                noteDisplay.classList.remove('empty');
-                editNoteBtn.innerHTML = '<span class="material-icons">edit</span> Edit Note';
-            } else {
-                noteDisplay.innerHTML = `
-                    <div class="empty">
-                        <span class="material-icons" style="font-size: 48px; color: var(--gray-400); margin-bottom: 16px;">note_add</span>
-                        <div>
-                            <p>No notes added yet</p>
-                            <p style="font-size: 14px; margin-top: 8px;">Click "Add Note" to include terms, conditions, or special instructions</p>
-                        </div>
-                    </div>
-                `;
-                noteDisplay.classList.add('empty');
-                editNoteBtn.innerHTML = '<span class="material-icons">edit</span> Add Note';
-            }
-        }
-
-        function toggleNoteEdit() {
-            const noteDisplay = document.getElementById('noteDisplay');
-            const noteEditor = document.getElementById('noteEditor');
-            const noteActions = document.getElementById('noteActions');
-            const editingActions = document.getElementById('editingActions');
-            const noteTextarea = document.getElementById('noteTextarea');
-
-            noteDisplay.style.display = 'none';
-            noteEditor.classList.add('active');
-            noteActions.style.display = 'none';
-            editingActions.style.display = 'flex';
-
-            noteTextarea.value = savedNote;
-            noteTextarea.focus();
-        }
-
-        function saveNote() {
-            const noteTextarea = document.getElementById('noteTextarea');
-            savedNote = noteTextarea.value.trim();
-
-            try {
-                localStorage.setItem('billingSavedNote', savedNote);
-            } catch (error) {
-                console.error('Error saving note:', error);
-                showError('Error saving note. Please try again.');
-                return;
-            }
-
-            cancelEditNote();
-            displayNote();
-
-            const clearBtn = document.getElementById('clearNoteBtn');
-            if (savedNote) {
-                clearBtn.style.display = 'inline-flex';
-                showSuccess('Note saved successfully!', 2000);
-            } else {
-                clearBtn.style.display = 'none';
-            }
-        }
-
-        function cancelEditNote() {
-            const noteDisplay = document.getElementById('noteDisplay');
-            const noteEditor = document.getElementById('noteEditor');
-            const noteActions = document.getElementById('noteActions');
-            const editingActions = document.getElementById('editingActions');
-
-            noteDisplay.style.display = 'block';
-            noteEditor.classList.remove('active');
-            noteActions.style.display = 'flex';
-            editingActions.style.display = 'none';
-        }
-
-        function clearNote() {
-            if (confirm('Are you sure you want to clear the note? This action cannot be undone.')) {
-                savedNote = '';
-                localStorage.removeItem('billingSavedNote');
-                displayNote();
-                document.getElementById('clearNoteBtn').style.display = 'none';
-                showSuccess('Note cleared successfully!', 2000);
-            }
-        }
-
-        function updateNotePreview() {
-            // Can be used for real-time preview if needed
-        }
-
-        // Toggle GST functionality
-        function toggleGST() {
-            const gstEnabled = document.getElementById('gstEnabled').checked;
-            const gstRatesSection = document.getElementById('gstRatesSection');
-            
-            if (gstEnabled) {
-                gstRatesSection.style.display = 'grid';
-            } else {
-                gstRatesSection.style.display = 'none';
-            }
-            
-            calculateGrandTotal();
-        }
-
-        // Calculate row total
-        function calculateRowTotal(element) {
-            const row = element.closest('tr');
-            const quantityInput = row.querySelector('.quantity-input');
-            const priceInput = row.querySelector('.price-input');
-            const discountInput = row.querySelector('.discount-input');
-            const totalInput = row.querySelector('.total-input');
-
-            const quantity = parseFloat(quantityInput.value) || 0;
-            const price = parseFloat(priceInput.value) || 0;
-            const discount = parseFloat(discountInput?.value) || 0;
-
-            let total = quantity * price;
-            
-            if (discount > 0) {
-                total = total - (total * discount / 100);
-            }
-
-            totalInput.value = total.toFixed(2);
-            calculateGrandTotal();
-        }
-
-        
-        // Remove last row
-        function removeLastRow() {
-            const tableBody = document.getElementById('productTableBody');
-            if (tableBody.children.length > 1) {
-                tableBody.removeChild(tableBody.lastElementChild);
-                calculateGrandTotal();
-                showSuccess('Product row removed successfully!', 2000);
-            } else {
-                showError('Cannot remove the last product row.');
-            }
-        }
-
-        // Toggle discount section
-        function toggleDiscount(button) {
-            const row = button.closest('tr');
-            const discountSection = row.querySelector('.discount-section');
-            
-            if (discountSection.classList.contains('show')) {
-                discountSection.classList.remove('show');
-                discountSection.querySelector('input').value = '';
-                // Recalculate based on the primary input for the current mode
-                const triggerElement = row.querySelector('.product-name') || row.querySelector('.item-select');
-                calculateRowTotal(triggerElement);
-            } else {
-                discountSection.classList.add('show');
-            }
-        }
-
-        // Calculate grand total with dynamic GST
-        function calculateGrandTotal() {
-            const totalInputs = document.querySelectorAll('.total-input');
-            let subtotal = 0;
-
-            totalInputs.forEach(input => {
-                subtotal += parseFloat(input.value) || 0;
-            });
-
-            const gstEnabled = document.getElementById('gstEnabled').checked;
-            let sgst = 0, cgst = 0;
-            let grandTotal = subtotal;
-
-            if (gstEnabled && subtotal > 0) {
-                const sgstRate = parseFloat(document.getElementById('sgstRate').value) || 0;
-                const cgstRate = parseFloat(document.getElementById('cgstRate').value) || 0;
-
-                sgst = subtotal * (sgstRate / 100);
-                cgst = subtotal * (cgstRate / 100);
-
-                grandTotal = subtotal + sgst + cgst;
-
-                document.getElementById('sgstRateDisplay').textContent = `${sgstRate}%`;
-                document.getElementById('cgstRateDisplay').textContent = `${cgstRate}%`;
-            }
-
-            document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
-            document.getElementById('sgstAmount').textContent = `₹${sgst.toFixed(2)}`;
-            document.getElementById('cgstAmount').textContent = `₹${cgst.toFixed(2)}`;
-            document.getElementById('grandTotal').textContent = `₹${grandTotal.toFixed(2)}`;
-
-            const sgstRow = document.getElementById('sgstRow');
-            const cgstRow = document.getElementById('cgstRow');
-            
-            if (gstEnabled && subtotal > 0) {
-                sgstRow.style.display = sgst > 0 ? 'flex' : 'none';
-                cgstRow.style.display = cgst > 0 ? 'flex' : 'none';
-            } else {
-                sgstRow.style.display = 'none';
-                cgstRow.style.display = 'none';
-            }
-        }
-
-        // Generate invoice ID
-        function generateInvoiceId() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const randomNum = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
-            
-            const invoiceId = `INV-${year}${month}-${randomNum}`;
-            document.getElementById('invoiceId').value = invoiceId;
-        }
-
-        // Set today's date
-        function setTodayDate() {
-            const today = new Date();
-            const formattedDate = today.toISOString().split('T')[0];
-            document.getElementById('invoiceDate').value = formattedDate;
-        }
-
-        // Form validation
-        function validateForm() {
-            const requiredFields = [
-                { id: 'customerName', name: 'Customer Name' },
-                { id: 'customerMobile', name: 'Mobile Number' },
-                { id: 'invoiceDate', name: 'Invoice Date' }
-            ];
-
-            for (let field of requiredFields) {
-                const element = document.getElementById(field.id);
-                if (!element.value.trim()) {
-                    showError(`${field.name} is required.`);
-                    element.focus();
-                    return false;
-                }
-            }
-
-            const rows = document.querySelectorAll('#productTableBody .table-row');
-            let hasValidProduct = false;
-
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const price = parseFloat(row.querySelector('.price-input').value) || 0;
-                let nameIsValid = false;
-
-                if (productEntryMode === 'manual') {
-                    if (row.querySelector('.product-name').value.trim()) {
-                        nameIsValid = true;
-                    }
-                } else {
-                    if (row.querySelector('.category-select').value && row.querySelector('.item-select').value) {
-                         nameIsValid = true;
-                    }
-                }
-
-                if (nameIsValid && price > 0) {
-                    hasValidProduct = true;
-                    break;
-                }
-            }
-            
-            if (!hasValidProduct) {
-                showError('Please add at least one complete product entry with price.');
-                return false;
-            }
-
-            return true;
-        }
-
-        // Preview invoice
-        function previewInvoice() {
-            if (!validateForm()) return;
-
-            collectInvoiceData();
-            populatePreview();
-            
-            document.getElementById('invoicePreview').classList.add('show');
-            document.getElementById('whatsappSection').style.display = 'block';
-            
-            document.getElementById('invoicePreview').scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-            });
-            
-            updateWhatsAppPreview();
-            showSuccess('Invoice preview generated successfully!', 3000);
-        }
-
-        // Collect invoice data
-        function collectInvoiceData() {
-            const productData = [];
-            const rows = document.querySelectorAll('#productTableBody .table-row');
-            
-            rows.forEach((row, index) => {
-                const quantity = parseFloat(row.querySelector('.quantity-input').value) || 0;
-                const price = parseFloat(row.querySelector('.price-input').value) || 0;
-                const discount = parseFloat(row.querySelector('.discount-input')?.value) || 0;
-                const total = parseFloat(row.querySelector('.total-input').value) || 0;
-
-                let productInfo = { category: '', name: '' };
-                let isValid = false;
-
-                if (productEntryMode === 'manual') {
-                    productInfo.name = row.querySelector('.product-name').value.trim();
-                    if (productInfo.name && quantity > 0 && price > 0) isValid = true;
-                } else {
-                    const categorySelect = row.querySelector('.category-select');
-                    const itemSelect = row.querySelector('.item-select');
-                    if (categorySelect.value && itemSelect.value) {
-                        productInfo.category = categorySelect.options[categorySelect.selectedIndex].text;
-                        productInfo.name = itemSelect.options[itemSelect.selectedIndex].text;
-                        if (quantity > 0 && price > 0) isValid = true;
-                    }
-                }
-                
-                if (isValid) {
-                    productData.push({
-                        sno: index + 1,
-                        ...productInfo,
-                        quantity,
-                        price,
-                        discount,
-                        total
-                    });
-                }
-            });
-
-            const subtotal = productData.reduce((sum, item) => sum + item.total, 0);
-            
-            const gstEnabled = document.getElementById('gstEnabled').checked;
-            const sgstRate = parseFloat(document.getElementById('sgstRate').value) || 0;
-            const cgstRate = parseFloat(document.getElementById('cgstRate').value) || 0;
-
-            let sgst = 0, cgst = 0;
-            
-            if (gstEnabled) {
-                sgst = subtotal * (sgstRate / 100);
-                cgst = subtotal * (cgstRate / 100);
-            }
-
-            const grandTotal = subtotal + sgst + cgst;
-
-            currentInvoiceData = {
-                company: {
-                    name: document.getElementById('companyName').value || 'Your Company Name',
-                    phone: document.getElementById('companyPhone').value || '+91 XXXXXXXXXX',
-                    address: document.getElementById('companyAddress').value || 'Company Address',
-                    logo: uploadedLogoFile
-                },
-                customer: {
-                    name: document.getElementById('customerName').value,
-                    mobile: document.getElementById('customerMobile').value,
-                    email: document.getElementById('customerEmail').value || 'Not provided',
-                    location: document.getElementById('customerLocation').value || 'Not provided'
-                },
-                invoice: {
-                    id: document.getElementById('invoiceId').value,
-                    date: document.getElementById('invoiceDate').value
-                },
-                products: productData,
-                entryMode: productEntryMode,
-                gst: {
-                    enabled: gstEnabled,
-                    sgstRate: sgstRate,
-                    cgstRate: cgstRate
-                },
-                totals: {
-                    subtotal: subtotal,
-                    sgst: sgst,
-                    cgst: cgst,
-                    grandTotal: grandTotal
-                },
-                note: savedNote
-            };
-        }
-
-        // Populate preview
-        function populatePreview() {
-            if (!currentInvoiceData) return;
-
-            const data = currentInvoiceData;
-
-            // Company info
-            document.getElementById('previewCompanyName').textContent = data.company.name;
-            document.getElementById('previewCompanyPhone').innerHTML = `<strong>Phone:</strong> ${data.company.phone}`;
-            document.getElementById('previewCompanyAddress').innerHTML = `<strong>Address:</strong> ${data.company.address}`;
-            
-            const logoContainer = document.getElementById('previewLogo');
-            if (data.company.logo) {
-                logoContainer.innerHTML = `<img src="${data.company.logo}" alt="Company Logo" class="invoice-logo" />`;
-            } else {
-                logoContainer.innerHTML = '';
-            }
-
-            // Invoice meta
-            document.getElementById('previewInvoiceId').textContent = data.invoice.id;
-            document.getElementById('previewInvoiceDate').textContent = formatDate(data.invoice.date);
-
-            // Customer info
-            document.getElementById('previewCustomerName').textContent = data.customer.name;
-            document.getElementById('previewCustomerMobile').textContent = data.customer.mobile;
-            document.getElementById('previewCustomerEmail').textContent = data.customer.email;
-            document.getElementById('previewCustomerLocation').textContent = data.customer.location;
-
-            // Products table
-            const tableHeader = document.getElementById('previewProductTableHeader');
-            const tableBody = document.getElementById('previewTableBody');
-            tableHeader.innerHTML = '';
-            tableBody.innerHTML = '';
-
-            if(data.entryMode === 'category') {
-                tableHeader.innerHTML = `
-                    <tr>
-                        <th>S.No</th>
-                        <th class="col-category">Category</th>
-                        <th class="col-item">Product/Service</th>
-                        <th>Quantity</th>
-                        <th>Price (₹)</th>
-                        <th>Discount (%)</th>
-                        <th>Total (₹)</th>
-                    </tr>`;
-                data.products.forEach(product => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${product.sno}</td>
-                        <td>${product.category}</td>
-                        <td>${product.name}</td>
-                        <td>${product.quantity}</td>
-                        <td>₹${product.price.toFixed(2)}</td>
-                        <td>${product.discount}%</td>
-                        <td>₹${product.total.toFixed(2)}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } else {
-                 tableHeader.innerHTML = `
-                    <tr>
-                        <th>S.No</th>
-                        <th class="col-manual-name">Product Name</th>
-                        <th>Quantity</th>
-                        <th>Price (₹)</th>
-                        <th>Discount (%)</th>
-                        <th>Total (₹)</th>
-                    </tr>`;
-                data.products.forEach(product => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${product.sno}</td>
-                        <td>${product.name}</td>
-                        <td>${product.quantity}</td>
-                        <td>₹${product.price.toFixed(2)}</td>
-                        <td>${product.discount}%</td>
-                        <td>₹${product.total.toFixed(2)}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            }
-
-            // Totals
-            document.getElementById('previewSubtotal').textContent = `₹${data.totals.subtotal.toFixed(2)}`;
-            document.getElementById('previewGrandTotal').innerHTML = `<strong>₹${data.totals.grandTotal.toFixed(2)}</strong>`;
-
-            if (data.gst.enabled && data.totals.subtotal > 0) {
-                if (data.totals.sgst > 0) {
-                    document.getElementById('previewSgstLabel').textContent = `SGST (${data.gst.sgstRate}%)`;
-                    document.getElementById('previewSgst').textContent = `₹${data.totals.sgst.toFixed(2)}`;
-                    document.getElementById('previewSgstRow').style.display = 'table-row';
-                } else {
-                    document.getElementById('previewSgstRow').style.display = 'none';
-                }
-
-                if (data.totals.cgst > 0) {
-                    document.getElementById('previewCgstLabel').textContent = `CGST (${data.gst.cgstRate}%)`;
-                    document.getElementById('previewCgst').textContent = `₹${data.totals.cgst.toFixed(2)}`;
-                    document.getElementById('previewCgstRow').style.display = 'table-row';
-                } else {
-                    document.getElementById('previewCgstRow').style.display = 'none';
-                }
-            } else {
-                document.getElementById('previewSgstRow').style.display = 'none';
-                document.getElementById('previewCgstRow').style.display = 'none';
-            }
-
-            const notesSection = document.getElementById('invoiceNotesSection');
-            const notesContent = document.getElementById('invoiceNotesContent');
-            
-            if (data.note && data.note.trim()) {
-                notesContent.textContent = data.note;
-                notesSection.style.display = 'block';
-            } else {
-                notesSection.style.display = 'none';
-            }
-        }
-
-        // Generate PDF
-        async function generateInvoice() {
-            if (!validateForm()) return;
-
-            showLoading();
-            
-            let spacer = null;
-
-            try {
-                collectInvoiceData();
-                populatePreview();
-                
-                const element = document.getElementById('invoicePreview');
-                element.classList.add('show');
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                const notesSection = document.getElementById('invoiceNotesSection');
-
-                if (notesSection && window.getComputedStyle(notesSection).display !== 'none') {
-                    
-                    const elementRect = element.getBoundingClientRect();
-                    const notesRect = notesSection.getBoundingClientRect();
-                    
-                    const A4_RATIO = 297 / 210;
-                    const pageHeightInPixels = elementRect.width * A4_RATIO;
-                    
-                    const notesRelativeTop = notesRect.top - elementRect.top;
-                    
-                    const startPage = Math.floor(notesRelativeTop / pageHeightInPixels);
-                    const endPage = Math.floor((notesRelativeTop + notesRect.height) / pageHeightInPixels);
-
-                    if (startPage !== endPage) {
-                        const spaceUsedOnPage = notesRelativeTop % pageHeightInPixels;
-                        const spacerHeight = pageHeightInPixels - spaceUsedOnPage;
-                        
-                        spacer = document.createElement('div');
-                        spacer.style.height = `${spacerHeight}px`;
-                        notesSection.parentNode.insertBefore(spacer, notesSection);
-                        
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                    }
-                }
-
-                const canvas = await html2canvas(element, {
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: true,
-                    backgroundColor: '#ffffff'
-                });
-
-                if (spacer) {
-                    spacer.remove();
-                    spacer = null; 
-                }
-
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                
-                const imgWidth = 210;
-                const pageHeight = 297;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                let position = 0;
-
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-
-                while (heightLeft > 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
-
-                const fileName = `Invoice_${currentInvoiceData.invoice.id}_${currentInvoiceData.customer.name.replace(/\s+/g, '_')}.pdf`;
-                pdf.save(fileName);
-
-                hideLoading();
-                showSuccess('Invoice PDF generated and downloaded successfully!', 5000);
-                
-                document.getElementById('whatsappSection').style.display = 'block';
-                updateWhatsAppPreview();
-
-            } catch (error) {
-                hideLoading();
-                showError('Error generating PDF. Please try again.');
-                console.error('PDF generation error:', error);
-            } finally {
-                if (spacer) {
-                    spacer.remove();
-                }
-                document.getElementById('invoicePreview').classList.remove('show');
-            }
-        }
-
-        // WhatsApp integration
-        function updateWhatsAppPreview() {
-            if (!currentInvoiceData) {
-                collectInvoiceData();
-            }
-
-            const data = currentInvoiceData;
-            const customMessage = document.getElementById('whatsappMessage').value;
-            
-            let message = '';
-            if (customMessage.trim()) {
-                message += `${customMessage}\n\n`;
-            }
-
-            message += `📋 *INVOICE DETAILS*\n\n`;
-            message += `🏢 *Company:* ${data.company.name}\n`;
-            message += `📞 *Phone:* ${data.company.phone}\n`;
-            message += `📍 *Address:* ${data.company.address}\n\n`;
-            message += `👤 *Customer:* ${data.customer.name}\n`;
-            message += `📱 *Mobile:* ${data.customer.mobile}\n`;
-            if (data.customer.email !== 'Not provided') {
-                message += `✉️ *Email:* ${data.customer.email}\n`;
-            }
-            if (data.customer.location !== 'Not provided') {
-                message += `📍 *Location:* ${data.customer.location}\n`;
-            }
-            message += `\n🧾 *Invoice ID:* ${data.invoice.id}\n`;
-            message += `📅 *Date:* ${formatDate(data.invoice.date)}\n\n`;
-            message += `🛍️ *PRODUCTS:*\n`;
-            
-            data.products.forEach((product, index) => {
-                let productName = product.category ? `${product.category} - ${product.name}`: product.name;
-                message += `${index + 1}. ${productName}\n`;
-                message += `   Qty: ${product.quantity} × ₹${product.price.toFixed(2)}`;
-                if (product.discount > 0) {
-                    message += ` (${product.discount}% off)`;
-                }
-                message += ` = ₹${product.total.toFixed(2)}\n\n`;
-            });
-
-            message += `💰 *PAYMENT SUMMARY:*\n`;
-            message += `Subtotal: ₹${data.totals.subtotal.toFixed(2)}\n`;
-            
-            if (data.gst.enabled && data.totals.subtotal > 0) {
-                if (data.totals.sgst > 0) {
-                    message += `SGST (${data.gst.sgstRate}%): ₹${data.totals.sgst.toFixed(2)}\n`;
-                }
-                if (data.totals.cgst > 0) {
-                    message += `CGST (${data.gst.cgstRate}%): ₹${data.totals.cgst.toFixed(2)}\n`;
-                }
-            }
-            
-            message += `*GRAND TOTAL: ₹${data.totals.grandTotal.toFixed(2)}*\n\n`;
-
-            if (data.note && data.note.trim()) {
-                message += `📝 *NOTES & TERMS:*\n${data.note}\n\n`;
-            }
-
-            message += `✨ Thank you for your business!\n`;
-            message += `For any queries, please contact us.`;
-
-            document.getElementById('whatsappPreviewText').textContent = message;
-        }
-
-        // Send WhatsApp message
-        function sendWhatsAppMessage() {
-            if (!currentInvoiceData) {
-                showError('Please generate invoice preview first.');
-                return;
-            }
-
-            const mobile = currentInvoiceData.customer.mobile;
-            const message = document.getElementById('whatsappPreviewText').textContent;
-            
-            const cleanMobile = mobile.replace(/\D/g, '');
-            const formattedMobile = cleanMobile.startsWith('91') ? cleanMobile : `91${cleanMobile}`;
-            
-            const whatsappUrl = `https://wa.me/${formattedMobile}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-            
-            showSuccess('Opening WhatsApp...', 3000);
-        }
-
-        // Copy WhatsApp message
-        async function copyWhatsAppMessage() {
-            if (!currentInvoiceData) {
-                showError('Please generate invoice preview first.');
-                return;
-            }
-
-            const message = document.getElementById('whatsappPreviewText').textContent;
-            
-            try {
-                await navigator.clipboard.writeText(message);
-                showSuccess('Message copied to clipboard!', 3000);
-            } catch (err) {
-                const textArea = document.createElement('textarea');
-                textArea.value = message;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showSuccess('Message copied to clipboard!', 3000);
-            }
-        }
-
-        // Preview full invoice
-        function previewFullInvoice() {
-            if (document.getElementById('invoicePreview').classList.contains('show')) {
-                document.getElementById('invoicePreview').scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            } else {
-                previewInvoice();
-            }
-        }
-
-        // Close Preview
-        function closePreview() {
-            document.getElementById('invoicePreview').classList.remove('show');
-            document.getElementById('whatsappSection').style.display = 'none';
-            document.querySelector('.wp-billing-container').scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-
-        // Reset form
-        function resetForm() {
-            if (confirm('Are you sure you want to reset the entire form? All data except saved notes and categories will be lost.')) {
-                document.querySelectorAll('.form-input').forEach(input => {
-                    if (input.id !== 'invoiceId' && input.id !== 'newCategoryName') {
-                        input.value = '';
-                    }
-                });
-
-                document.getElementById('sgstRate').value = '9';
-                document.getElementById('cgstRate').value = '9';
-                document.getElementById('gstEnabled').checked = true;
-
-                uploadedLogoFile = null;
-                document.getElementById('logoContent').innerHTML = `
-                    <span class="material-icons" style="font-size: 52px; color: var(--secondary-color);">cloud_upload</span>
-                    <p style="margin-top: 12px; color: var(--gray-600); font-size: 14px; text-align: center; font-weight: 600;">Click to upload company logo</p>
-                `;
-
-                document.getElementById('entryModeToggle').checked = false;
-                productEntryMode = 'manual';
-                renderProductTable();
-
-                document.getElementById('invoicePreview').classList.remove('show');
-                document.getElementById('whatsappSection').style.display = 'none';
-                
-                toggleGST();
-                calculateGrandTotal();
-                
-                generateInvoiceId();
-                setTodayDate();
-                
-                currentInvoiceData = null;
-                
-                showSuccess('Form reset successfully! (Notes & Categories preserved)', 3000);
-                
-                document.querySelector('.wp-billing-container').scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        }
-
-        // Save template
-        function saveTemplate() {
-            const templateData = {
-                company: {
-                    name: document.getElementById('companyName').value,
-                    phone: document.getElementById('companyPhone').value,
-                    address: document.getElementById('companyAddress').value,
-                    logo: uploadedLogoFile
-                },
-                gst: {
-                    enabled: document.getElementById('gstEnabled').checked,
-                    sgstRate: document.getElementById('sgstRate').value,
-                    cgstRate: document.getElementById('cgstRate').value
-                },
-                note: savedNote,
-                timestamp: new Date().toISOString()
-            };
-
-            try {
-                localStorage.setItem('billingTemplate', JSON.stringify(templateData));
-                showSuccess('Template saved successfully!', 3000);
-            } catch (error) {
-                showError('Error saving template. Please try again.');
-                console.error('Template save error:', error);
-            }
-        }
-
-        // Load template
-        function loadTemplate() {
-            try {
-                const savedTemplate = localStorage.getItem('billingTemplate');
-                if (savedTemplate) {
-                    const templateData = JSON.parse(savedTemplate);
-                    
-                    document.getElementById('companyName').value = templateData.company.name || '';
-                    document.getElementById('companyPhone').value = templateData.company.phone || '';
-                    document.getElementById('companyAddress').value = templateData.company.address || '';
-                    
-                    if (templateData.company.logo) {
-                        uploadedLogoFile = templateData.company.logo;
-                        displayLogo(templateData.company.logo);
-                    }
-
-                    if (templateData.gst) {
-                        document.getElementById('gstEnabled').checked = templateData.gst.enabled !== false;
-                        document.getElementById('sgstRate').value = templateData.gst.sgstRate || '9';
-                        document.getElementById('cgstRate').value = templateData.gst.cgstRate || '9';
-                        toggleGST();
-                    }
-
-                    if (templateData.note && !savedNote) {
-                        savedNote = templateData.note;
-                        displayNote();
-                    }
-                }
-            } catch (error) {
-                console.error('Template load error:', error);
-            }
-        }
-
-        // Utility functions
-        function showSuccess(message, duration = 3000) {
-            const successElement = document.getElementById('successMessage');
-            const textElement = document.getElementById('successText');
-            
-            textElement.textContent = message;
-            successElement.classList.add('show');
-            
-            setTimeout(() => {
-                successElement.classList.remove('show');
-            }, duration);
-        }
-
-        function showError(message, duration = 5000) {
-            const errorElement = document.getElementById('errorMessage');
-            const textElement = document.getElementById('errorText');
-            
-            textElement.textContent = message;
-            errorElement.classList.add('show');
-            
-            setTimeout(() => {
-                errorElement.classList.remove('show');
-            }, duration);
-        }
-
-        function showLoading() {
-            document.getElementById('loadingAnimation').classList.add('show');
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingAnimation').classList.remove('show');
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-IN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-
-        // Load template on page load
-        loadTemplate();
-    </script>
 </body>
 </html>

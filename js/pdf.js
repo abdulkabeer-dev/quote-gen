@@ -28,16 +28,16 @@ async function generateInvoice() {
             const bottomRect = bottomLayout.getBoundingClientRect();
             const A4_RATIO = 297 / 210;
             const pageHeightInPixels = elementRect.width * A4_RATIO;
-            
+
             const targetRelativeTop = bottomRect.top - elementRect.top;
             const documentRelativeBottom = elementRect.height;
-            
+
             const startPage = Math.floor(targetRelativeTop / pageHeightInPixels);
             const endPage = Math.floor(documentRelativeBottom / pageHeightInPixels);
-            
+
             const spaceUsedOnPage = targetRelativeTop % pageHeightInPixels;
             const spaceLeftOnPage = pageHeightInPixels - spaceUsedOnPage;
-            const topMargin = 31; // 31px top padding on subsequent pages
+            const topMargin = 60; //31px top padding on subsequent pages
 
             let spacerHeight = 0;
             if (spaceUsedOnPage < topMargin) {

@@ -37,7 +37,7 @@ async function generateInvoice() {
             
             const spaceUsedOnPage = targetRelativeTop % pageHeightInPixels;
             const spaceLeftOnPage = pageHeightInPixels - spaceUsedOnPage;
-            const topMargin = 25; // 25px top padding on subsequent pages
+            const topMargin = 31; // 31px top padding on subsequent pages
 
             let spacerHeight = 0;
             if (spaceUsedOnPage < topMargin) {

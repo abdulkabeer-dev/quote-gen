@@ -8,9 +8,11 @@
     display: none;
     background: var(--white);
     padding: 50px 50px 50px 85px; /* 85px left for larger filing margin */
-    margin: 32px 0;
+    margin: 32px auto;
+    width: 800px;
+    border: 1px solid var(--gray-200);
     border-radius: 0;
-    box-shadow: none;
+    box-shadow: var(--shadow-lg);
     font-family: var(--inv-font);
     line-height: 1.6;
     color: var(--dark-color);

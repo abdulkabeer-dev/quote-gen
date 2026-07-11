@@ -120,7 +120,6 @@ function resetForm() {
 
         toggleGST();
         calculateGrandTotal();
-        generateInvoiceId();
         setTodayDate();
 
         currentInvoiceData = null;

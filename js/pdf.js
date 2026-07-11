@@ -21,24 +21,31 @@ async function generateInvoice() {
         element.classList.add('show');
         await new Promise(resolve => setTimeout(resolve, 600));
 
-        // Page break prevention for notes section
-        const notesSection = document.getElementById('invoiceNotesSection');
-        if (notesSection && window.getComputedStyle(notesSection).display !== 'none') {
+        // Page break prevention for the entire bottom section (Notes, Totals, Signature, Footer)
+        const bottomLayout = document.querySelector('.invoice-bottom-layout');
+        if (bottomLayout && window.getComputedStyle(bottomLayout).display !== 'none') {
             const elementRect = element.getBoundingClientRect();
-            const notesRect = notesSection.getBoundingClientRect();
+            const bottomRect = bottomLayout.getBoundingClientRect();
             const A4_RATIO = 297 / 210;
             const pageHeightInPixels = elementRect.width * A4_RATIO;
-            const notesRelativeTop = notesRect.top - elementRect.top;
-            const startPage = Math.floor(notesRelativeTop / pageHeightInPixels);
-            const endPage = Math.floor((notesRelativeTop + notesRect.height) / pageHeightInPixels);
+            
+            const targetRelativeTop = bottomRect.top - elementRect.top;
+            const documentRelativeBottom = elementRect.height;
+            
+            const startPage = Math.floor(targetRelativeTop / pageHeightInPixels);
+            const endPage = Math.floor(documentRelativeBottom / pageHeightInPixels);
 
             if (startPage !== endPage) {
-                const spaceUsedOnPage = notesRelativeTop % pageHeightInPixels;
-                const spacerHeight = pageHeightInPixels - spaceUsedOnPage;
-                spacer = document.createElement('div');
-                spacer.style.height = `${spacerHeight}px`;
-                notesSection.parentNode.insertBefore(spacer, notesSection);
-                await new Promise(resolve => setTimeout(resolve, 100));
+                const spaceUsedOnPage = targetRelativeTop % pageHeightInPixels;
+                if (spaceUsedOnPage > 5) {
+                    const spacerHeight = pageHeightInPixels - spaceUsedOnPage;
+                    spacer = document.createElement('div');
+                    spacer.className = 'pdf-page-spacer';
+                    spacer.style.height = `${spacerHeight}px`;
+                    spacer.style.width = '100%';
+                    bottomLayout.parentNode.insertBefore(spacer, bottomLayout);
+                    await new Promise(resolve => setTimeout(resolve, 150));
+                }
             }
         }
 

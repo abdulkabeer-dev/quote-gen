@@ -423,7 +423,7 @@ body::before {
 .col-width { width: 80px; min-width: 70px; }
 .col-height { width: 80px; min-width: 70px; }
 .col-sqft { width: 100px; min-width: 90px; }
-.col-days { width: 90px; min-width: 80px; }
+.col-months { width: 110px; min-width: 90px; }
 .col-rate { width: 110px; min-width: 100px; }
 .col-amount { width: 120px; min-width: 110px; }
 .col-actions { width: 60px; min-width: 60px; }

@@ -19,8 +19,8 @@ function renderProductTable() {
             <th class="col-width">Width</th>
             <th class="col-height">Height</th>
             <th class="col-sqft">Total Sq.Ft</th>
-            <th class="col-days">No. of Days</th>
-            <th class="col-rate">Rate/Day (₹)</th>
+            <th class="col-rate">Rate/Sq.Ft (₹)</th>
+            <th class="col-months">No. of Months</th>
             <th class="col-amount">Amount (₹)</th>
             <th class="col-actions">Actions</th>
         </tr>
@@ -60,12 +60,12 @@ function addProductRow() {
         <td class="table-cell" data-label="Total Sq.Ft">
             <input type="number" class="table-input sqft-input" placeholder="0" readonly />
         </td>
-        <td class="table-cell" data-label="No. of Days">
-            <input type="number" class="table-input days-input" placeholder="1" min="1" value="1"
+        <td class="table-cell" data-label="Rate/Sq.Ft">
+            <input type="number" class="table-input rate-input" placeholder="0.00" min="0" step="0.01"
                    oninput="calculateRowTotal(this)" />
         </td>
-        <td class="table-cell" data-label="Rate/Day">
-            <input type="number" class="table-input rate-input" placeholder="0.00" min="0" step="0.01"
+        <td class="table-cell" data-label="No. of Months">
+            <input type="number" class="table-input months-input" placeholder="1" min="0.01" value="1" step="0.01"
                    oninput="calculateRowTotal(this)" />
         </td>
         <td class="table-cell" data-label="Amount">
@@ -90,11 +90,11 @@ function calculateRowTotal(element) {
 
     const width = parseFloat(row.querySelector('.width-input').value) || 0;
     const height = parseFloat(row.querySelector('.height-input').value) || 0;
-    const days = parseFloat(row.querySelector('.days-input').value) || 0;
     const rate = parseFloat(row.querySelector('.rate-input').value) || 0;
+    const months = parseFloat(row.querySelector('.months-input').value) || 0;
 
     const sqft = width * height;
-    const amount = rate * days;
+    const amount = sqft * rate * months;
 
     row.querySelector('.sqft-input').value = sqft > 0 ? sqft.toFixed(2) : '';
     row.querySelector('.amount-input').value = amount > 0 ? amount.toFixed(2) : '';

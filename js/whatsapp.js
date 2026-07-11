@@ -47,7 +47,7 @@ function updateWhatsAppPreview() {
             if (product.location) message += ` - ${product.location}`;
             message += `\n`;
             message += `   ${product.width}×${product.height} = ${product.sqft.toFixed(0)} Sq.Ft`;
-            message += ` × ${product.days} days × ₹${product.rate}`;
+            message += ` × ₹${product.rate}/Sq.Ft × ${product.months} ${product.months === 1 ? 'month' : 'months'}`;
             message += ` = ${formatCurrency(product.amount)}\n\n`;
         });
     }

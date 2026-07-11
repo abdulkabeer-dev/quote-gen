@@ -17,8 +17,8 @@ function collectInvoiceData() {
         const width = parseFloat(row.querySelector('.width-input')?.value) || 0;
         const height = parseFloat(row.querySelector('.height-input')?.value) || 0;
         const sqft = parseFloat(row.querySelector('.sqft-input')?.value) || 0;
-        const days = parseFloat(row.querySelector('.days-input')?.value) || 0;
         const rate = parseFloat(row.querySelector('.rate-input')?.value) || 0;
+        const months = parseFloat(row.querySelector('.months-input')?.value) || 0;
         const amount = parseFloat(row.querySelector('.amount-input')?.value) || 0;
 
         if ((town || location) && amount > 0) {
@@ -29,8 +29,8 @@ function collectInvoiceData() {
                 width,
                 height,
                 sqft,
-                days,
                 rate,
+                months,
                 amount
             });
         }
@@ -227,8 +227,8 @@ function populatePreview() {
             <td>${product.width}</td>
             <td>${product.height}</td>
             <td>${product.sqft.toFixed(2)}</td>
-            <td>${product.days}</td>
             <td>${formatCurrency(product.rate)}</td>
+            <td>${product.months}</td>
             <td><strong>${formatCurrency(product.amount)}</strong></td>
         `;
         tableBody.appendChild(row);
@@ -297,8 +297,8 @@ function populatePreview() {
     // === Signature ===
     const signatureSection = document.getElementById('previewSignature');
     const sigScale = data.signatureScale || 1.0;
-    const sigHeight = 60 * sigScale;
-    const sigWidth = 180 * sigScale;
+    const sigHeight = 100 * sigScale;
+    const sigWidth = 300 * sigScale;
     
     let sigHtml = `<div class="invoice-signature-label" style="font-size: calc(15px * var(--inv-scale));">For ${data.company.name}</div>`;
     if (data.signature) {

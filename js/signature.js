@@ -142,8 +142,8 @@ function updateSignatureScaleDisplay(val, writeStorage = true) {
     // Dynamically adjust preview signature scale if it's currently rendered
     const previewSigImage = document.querySelector('#previewSignature img');
     if (previewSigImage) {
-        const sigHeight = 60 * scale;
-        const sigWidth = 180 * scale;
+        const sigHeight = 100 * scale;
+        const sigWidth = 300 * scale;
         previewSigImage.style.maxHeight = `${sigHeight}px`;
         previewSigImage.style.maxWidth = `${sigWidth}px`;
     }

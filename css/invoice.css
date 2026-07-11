@@ -269,6 +269,11 @@
     color: var(--dark-color);
 }
 
+.invoice-service-table th:last-child,
+.invoice-service-table td:last-child {
+    text-align: right;
+}
+
 /* === BOTTOM LAYOUT === */
 .invoice-bottom-layout {
     display: flex;
@@ -284,12 +289,13 @@
 
 /* === INVOICE NOTES (PDF) === */
 .invoice-notes {
-    flex: 1.5;
     background: var(--white);
     border: 1px solid var(--black);
     border-radius: 0;
-    padding: 10px;
+    padding: 10px 4px 10px 10px;
     margin: 0;
+    width: fit-content;
+    max-width: 60%;
 }
 
 .invoice-notes h4 {
@@ -375,8 +381,8 @@
 }
 
 .invoice-signature img {
-    max-width: 180px;
-    max-height: 80px;
+    max-width: 400px;
+    max-height: 150px;
     object-fit: contain;
 }
 

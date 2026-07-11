@@ -12,7 +12,7 @@ let uploadedSignatureScale = 1.0;
 
 // === INITIALIZATION ===
 document.addEventListener('DOMContentLoaded', function () {
-    generateInvoiceId();
+    loadInvoiceId();
     setTodayDate();
     renderProductTable();
     renderServiceTable();
@@ -23,3 +23,15 @@ document.addEventListener('DOMContentLoaded', function () {
     loadTemplate();
     applyPdfSettings();
 });
+
+function loadInvoiceId() {
+    const invoiceIdInput = document.getElementById('invoiceId');
+    if (invoiceIdInput) {
+        const savedInvoiceId = localStorage.getItem('billingInvoiceNumber') || '';
+        invoiceIdInput.value = savedInvoiceId;
+        
+        invoiceIdInput.addEventListener('input', function() {
+            localStorage.setItem('billingInvoiceNumber', this.value);
+        });
+    }
+}

@@ -4,6 +4,45 @@
    ============================================ */
 
 /**
+ * Helper to prevent an element from splitting across pages by inserting a vertical spacer.
+ */
+async function preventElementSplit(targetElement, pageHeightInPixels, elementRect, topMargin) {
+    if (!targetElement || window.getComputedStyle(targetElement).display === 'none') {
+        return null;
+    }
+    const targetRect = targetElement.getBoundingClientRect();
+    const targetRelativeTop = targetRect.top - elementRect.top;
+    const targetRelativeBottom = targetRect.bottom - elementRect.top;
+    
+    const startPage = Math.floor(targetRelativeTop / pageHeightInPixels);
+    const endPage = Math.floor(targetRelativeBottom / pageHeightInPixels);
+    
+    const spaceUsedOnPage = targetRelativeTop % pageHeightInPixels;
+    const spaceLeftOnPage = pageHeightInPixels - spaceUsedOnPage;
+
+    let spacerHeight = 0;
+    if (spaceUsedOnPage < topMargin) {
+        // If it starts too close to the top of a page, push it down to topMargin
+        spacerHeight = topMargin - spaceUsedOnPage;
+    } else if (startPage !== endPage) {
+        // If it spans across page boundaries, push it to start on the next page with topMargin
+        spacerHeight = spaceLeftOnPage + topMargin;
+    }
+
+    if (spacerHeight > 0) {
+        const spacer = document.createElement('div');
+        spacer.className = 'pdf-page-spacer';
+        spacer.style.height = `${spacerHeight}px`;
+        spacer.style.width = '100%';
+        targetElement.parentNode.insertBefore(spacer, targetElement);
+        // Wait a short duration to let layout update
+        await new Promise(resolve => setTimeout(resolve, 150));
+        return spacer;
+    }
+    return null;
+}
+
+/**
  * Generate PDF invoice with A4 optimization and filing margin
  */
 async function generateInvoice() {
@@ -11,7 +50,7 @@ async function generateInvoice() {
 
     showLoading();
 
-    let spacer = null;
+    let spacers = [];
 
     try {
         collectInvoiceData();
@@ -21,42 +60,27 @@ async function generateInvoice() {
         element.classList.add('show');
         await new Promise(resolve => setTimeout(resolve, 600));
 
-        // Page break prevention for the entire bottom section (Notes, Totals, Signature, Footer)
+        const elementRect = element.getBoundingClientRect();
+        const A4_RATIO = 297 / 210;
+        const pageHeightInPixels = elementRect.width * A4_RATIO;
+        const topMargin = 60; // top padding on subsequent pages
+
+        // Sequential page break check for key layout blocks
+        const serviceCharges = document.getElementById('previewServiceCharges');
+        const spacerService = await preventElementSplit(serviceCharges, pageHeightInPixels, elementRect, topMargin);
+        if (spacerService) spacers.push(spacerService);
+
         const bottomLayout = document.querySelector('.invoice-bottom-layout');
-        if (bottomLayout && window.getComputedStyle(bottomLayout).display !== 'none') {
-            const elementRect = element.getBoundingClientRect();
-            const bottomRect = bottomLayout.getBoundingClientRect();
-            const A4_RATIO = 297 / 210;
-            const pageHeightInPixels = elementRect.width * A4_RATIO;
+        const spacerBottom = await preventElementSplit(bottomLayout, pageHeightInPixels, elementRect, topMargin);
+        if (spacerBottom) spacers.push(spacerBottom);
 
-            const targetRelativeTop = bottomRect.top - elementRect.top;
-            const documentRelativeBottom = elementRect.height;
+        const previewSignature = document.getElementById('previewSignature');
+        const spacerSig = await preventElementSplit(previewSignature, pageHeightInPixels, elementRect, topMargin);
+        if (spacerSig) spacers.push(spacerSig);
 
-            const startPage = Math.floor(targetRelativeTop / pageHeightInPixels);
-            const endPage = Math.floor(documentRelativeBottom / pageHeightInPixels);
-
-            const spaceUsedOnPage = targetRelativeTop % pageHeightInPixels;
-            const spaceLeftOnPage = pageHeightInPixels - spaceUsedOnPage;
-            const topMargin = 60; //31px top padding on subsequent pages
-
-            let spacerHeight = 0;
-            if (spaceUsedOnPage < topMargin) {
-                // If it starts too close to the top of a page, push it down to topMargin
-                spacerHeight = topMargin - spaceUsedOnPage;
-            } else if (startPage !== endPage) {
-                // If it spans across page boundaries, push it to start on the next page with topMargin
-                spacerHeight = spaceLeftOnPage + topMargin;
-            }
-
-            if (spacerHeight > 0) {
-                spacer = document.createElement('div');
-                spacer.className = 'pdf-page-spacer';
-                spacer.style.height = `${spacerHeight}px`;
-                spacer.style.width = '100%';
-                bottomLayout.parentNode.insertBefore(spacer, bottomLayout);
-                await new Promise(resolve => setTimeout(resolve, 150));
-            }
-        }
+        const invoiceFooter = document.querySelector('.invoice-footer');
+        const spacerFooter = await preventElementSplit(invoiceFooter, pageHeightInPixels, elementRect, topMargin);
+        if (spacerFooter) spacers.push(spacerFooter);
 
         // Capture at high resolution for print quality
         const canvas = await html2canvas(element, {
@@ -67,11 +91,9 @@ async function generateInvoice() {
             logging: false
         });
 
-        // Remove spacer
-        if (spacer) {
-            spacer.remove();
-            spacer = null;
-        }
+        // Remove spacers
+        spacers.forEach(s => s.remove());
+        spacers = [];
 
         const imgData = canvas.toDataURL('image/jpeg', 0.85);
         const { jsPDF } = window.jspdf;
@@ -112,7 +134,7 @@ async function generateInvoice() {
         showError('Error generating PDF. Please try again.');
         console.error('PDF generation error:', error);
     } finally {
-        if (spacer) spacer.remove();
+        spacers.forEach(s => s.remove());
         document.getElementById('invoicePreview').classList.remove('show');
     }
 }

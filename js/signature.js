@@ -67,6 +67,14 @@ function loadSignature() {
                 updateSignatureScaleDisplay(savedScale, false); // false to not write back to local storage during load
             }
         }
+
+        const savedEnabled = localStorage.getItem('billingSignatureEnabled');
+        if (savedEnabled !== null) {
+            const sigToggle = document.getElementById('signatureEnabled');
+            if (sigToggle) {
+                sigToggle.checked = savedEnabled === 'true';
+            }
+        }
     } catch (error) {
         console.error('Error loading signature/scale:', error);
     }
@@ -146,5 +154,18 @@ function updateSignatureScaleDisplay(val, writeStorage = true) {
         const sigWidth = 300 * scale;
         previewSigImage.style.maxHeight = `${sigHeight}px`;
         previewSigImage.style.maxWidth = `${sigWidth}px`;
+    }
+}
+
+/**
+ * Toggle signature visibility in preview and save status
+ */
+function toggleSignature() {
+    const sigToggle = document.getElementById('signatureEnabled');
+    if (sigToggle) {
+        const enabled = sigToggle.checked;
+        localStorage.setItem('billingSignatureEnabled', enabled);
+        collectInvoiceData();
+        populatePreview();
     }
 }

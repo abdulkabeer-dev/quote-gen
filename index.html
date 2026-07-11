@@ -408,6 +408,17 @@
                 Upload a signature image (PNG/JPG). It will be saved permanently and appear on every invoice.
             </p>
 
+            <div class="gst-toggle" style="margin-bottom: 24px;">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="signatureEnabled" onchange="toggleSignature()" checked>
+                    <span class="slider"></span>
+                </label>
+                <span style="font-weight: 600; color: var(--dark-color);">
+                    <span class="material-icons" style="vertical-align: text-bottom; margin-right: 8px;">draw</span>
+                    Enable Digital Signature in PDF
+                </span>
+            </div>
+
             <div style="display: flex; align-items: start; gap: 20px; flex-wrap: wrap;">
                 <div class="signature-upload-area" onclick="document.getElementById('signatureInput').click()">
                     <input type="file" id="signatureInput" accept="image/png,image/jpeg" onchange="handleSignatureUpload(event)" />

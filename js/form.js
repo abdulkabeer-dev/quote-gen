@@ -164,7 +164,8 @@ function saveTemplate() {
             fontFamily: document.getElementById('pdfFontFamily').value,
             headerFontScale: document.getElementById('pdfHeaderFontScale')?.value || '1',
             bodyFontScale: document.getElementById('pdfBodyFontScale')?.value || '1',
-            signatureScale: document.getElementById('signatureScale')?.value || '1.0'
+            signatureScale: document.getElementById('signatureScale')?.value || '1.0',
+            signatureEnabled: document.getElementById('signatureEnabled')?.checked !== false
         },
         note: savedNote,
         timestamp: new Date().toISOString()
@@ -235,6 +236,12 @@ function loadTemplate() {
                     if (slider) {
                         slider.value = data.pdfSettings.signatureScale;
                         updateSignatureScaleDisplay(data.pdfSettings.signatureScale, false);
+                    }
+                }
+                if (data.pdfSettings.signatureEnabled !== undefined) {
+                    const sigToggle = document.getElementById('signatureEnabled');
+                    if (sigToggle) {
+                        sigToggle.checked = data.pdfSettings.signatureEnabled;
                     }
                 }
             }

@@ -125,6 +125,7 @@ function collectInvoiceData() {
         },
         signature: uploadedSignature,
         signatureScale: uploadedSignatureScale,
+        signatureEnabled: document.getElementById('signatureEnabled')?.checked !== false,
         note: savedNote
     };
 }
@@ -301,10 +302,11 @@ function populatePreview() {
     const sigWidth = 300 * sigScale;
     
     let sigHtml = `<div class="invoice-signature-label" style="font-size: calc(15px * var(--inv-scale));">For ${data.company.name}</div>`;
-    if (data.signature) {
+    const sigEnabled = data.signatureEnabled !== false;
+    if (sigEnabled && data.signature) {
         sigHtml += `<img src="${data.signature}" alt="Authorized Signature" style="max-height: ${sigHeight}px; max-width: ${sigWidth}px; object-fit: contain; display: inline-block; margin-top: 8px;" />`;
     } else {
-        sigHtml += `<div style="height: 50px;"></div>`; // blank space for manual signature
+        sigHtml += `<div style="height: 60px;"></div>`; // blank space for manual signature
     }
     signatureSection.innerHTML = sigHtml;
     signatureSection.style.display = 'block';

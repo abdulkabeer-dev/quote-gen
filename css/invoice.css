@@ -9,7 +9,7 @@
     background: var(--white);
     padding: 50px 50px 50px 85px; /* 85px left for larger filing margin */
     margin: 32px auto;
-    width: 800px;
+    width: 1120px;
     border: 1px solid var(--gray-200);
     border-radius: 0;
     box-shadow: var(--shadow-lg);

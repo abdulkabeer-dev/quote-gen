@@ -34,18 +34,27 @@ async function generateInvoice() {
             
             const startPage = Math.floor(targetRelativeTop / pageHeightInPixels);
             const endPage = Math.floor(documentRelativeBottom / pageHeightInPixels);
+            
+            const spaceUsedOnPage = targetRelativeTop % pageHeightInPixels;
+            const spaceLeftOnPage = pageHeightInPixels - spaceUsedOnPage;
+            const topMargin = 25; // 25px top padding on subsequent pages
 
-            if (startPage !== endPage) {
-                const spaceUsedOnPage = targetRelativeTop % pageHeightInPixels;
-                if (spaceUsedOnPage > 5) {
-                    const spacerHeight = pageHeightInPixels - spaceUsedOnPage;
-                    spacer = document.createElement('div');
-                    spacer.className = 'pdf-page-spacer';
-                    spacer.style.height = `${spacerHeight}px`;
-                    spacer.style.width = '100%';
-                    bottomLayout.parentNode.insertBefore(spacer, bottomLayout);
-                    await new Promise(resolve => setTimeout(resolve, 150));
-                }
+            let spacerHeight = 0;
+            if (spaceUsedOnPage < topMargin) {
+                // If it starts too close to the top of a page, push it down to topMargin
+                spacerHeight = topMargin - spaceUsedOnPage;
+            } else if (startPage !== endPage) {
+                // If it spans across page boundaries, push it to start on the next page with topMargin
+                spacerHeight = spaceLeftOnPage + topMargin;
+            }
+
+            if (spacerHeight > 0) {
+                spacer = document.createElement('div');
+                spacer.className = 'pdf-page-spacer';
+                spacer.style.height = `${spacerHeight}px`;
+                spacer.style.width = '100%';
+                bottomLayout.parentNode.insertBefore(spacer, bottomLayout);
+                await new Promise(resolve => setTimeout(resolve, 150));
             }
         }
 

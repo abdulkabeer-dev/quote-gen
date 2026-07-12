@@ -94,10 +94,9 @@ function updateWhatsAppPreview() {
         if (data.bank.ifsc) message += `*IFSC:* ${data.bank.ifsc}\n`;
         if (data.bank.branch) message += `*Branch:* ${data.bank.branch}\n`;
         if (data.bank.pan) message += `*PAN:* ${data.bank.pan}\n`;
-        message += '\n';
     }
 
-    message += `✨ Thank you for your business!\nFor any queries, please contact us.`;
+    message = message.trim();
 
     document.getElementById('whatsappPreviewText').textContent = message;
 }

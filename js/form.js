@@ -200,7 +200,11 @@ function loadTemplate() {
                 if (data.company.logo) {
                     uploadedLogoFile = data.company.logo;
                     displayLogo(data.company.logo);
+                } else {
+                    loadDefaultLogo();
                 }
+            } else {
+                loadDefaultLogo();
             }
 
             // Bank
@@ -251,10 +255,21 @@ function loadTemplate() {
                 savedNote = data.note;
                 displayNote();
             }
+        } else {
+            // Load default company logo when no template is saved
+            loadDefaultLogo();
         }
     } catch (error) {
         console.error('Template load error:', error);
     }
+}
+
+/**
+ * Load default logo from local assets
+ */
+function loadDefaultLogo() {
+    uploadedLogoFile = "images/logo.jpg";
+    displayLogo("images/logo.jpg");
 }
 
 // === PDF APPEARANCE SETTINGS ===

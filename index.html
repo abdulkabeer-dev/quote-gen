@@ -715,6 +715,142 @@
 
     </div><!-- end .invoice-preview -->
 
+    <!-- Floating Info FAB Button -->
+    <button type="button" class="reference-fab" onclick="openReferenceModal()" title="Show DEVI ADS Reference Info">
+        <span class="material-icons">info</span>
+    </button>
+
+    <!-- Reference Info Modal -->
+    <div class="reference-modal-overlay" id="referenceModal" onclick="if(event.target === this) closeReferenceModal()">
+        <div class="reference-modal-container" onclick="event.stopPropagation()">
+            <div class="reference-modal-header">
+                <h3><span class="material-icons">info</span> DEVI ADS Reference Data</h3>
+                <button type="button" class="reference-modal-close" onclick="closeReferenceModal()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            
+            <div class="reference-modal-body">
+                <p class="reference-modal-subtitle">
+                    Quickly copy business details or automatically fill the entire billing form in one click.
+                </p>
+                
+                <div class="reference-quick-actions">
+                    <button type="button" class="btn btn-success btn-fill-all" onclick="autoFillAll()">
+                        <span class="material-icons">flash_on</span> Auto-fill All Form Fields & Save Template
+                    </button>
+                </div>
+                
+                <!-- Section 1: Company Info -->
+                <div class="reference-card">
+                    <div class="reference-card-header">
+                        <span class="reference-card-title">
+                            <span class="material-icons text-primary" style="color: var(--primary-color);">business</span> Company Details
+                        </span>
+                        <div class="reference-card-actions">
+                            <button type="button" class="btn-ref btn-ref-secondary" onclick="copyToClipboard(REFERENCE_DATA.company.name + '\n' + REFERENCE_DATA.company.tagline + '\n' + REFERENCE_DATA.company.phone + '\n' + REFERENCE_DATA.company.upi + '\n' + REFERENCE_DATA.company.gstNo + '\n' + REFERENCE_DATA.company.hsnSac + '\n' + REFERENCE_DATA.company.address, this)">
+                                <span class="material-icons">content_copy</span> Copy
+                            </button>
+                            <button type="button" class="btn-ref btn-ref-primary" onclick="autoFillSection('company')">
+                                <span class="material-icons">edit</span> Fill Form
+                            </button>
+                        </div>
+                    </div>
+                    <pre class="reference-content-pre">DEVI ADS
+OUT DOOR SERVICES
++919440292923, 08518796233 (Landline)
+14970249@kvb
+37AGOPG1150H1ZJ
+998361
+G 2, A Block, Ground Floor, Surya Towers, Near Devi Building, Challa Compound, Bhagya Nagar, Kurnool - 518004</pre>
+                </div>
+
+                <!-- Section 2: Terms & Conditions -->
+                <div class="reference-card">
+                    <div class="reference-card-header">
+                        <span class="reference-card-title">
+                            <span class="material-icons text-warning" style="color: var(--warning-color);">gavel</span> Terms & Conditions
+                        </span>
+                        <div class="reference-card-actions">
+                            <button type="button" class="btn-ref btn-ref-secondary" onclick="copyToClipboard('- Please check the copies of advertisements released, attached to the bill.\n- Check the bill amount and notify us immediately if incorrect.\n- Amount should be remitted through cheque/D.D. in favour of M/s DEVI ADS.\n- Bill amount not paid on the agreed date shall be charged 24% per annum.\n- Please acknowledge the attached copy to the original invoice/bill', this)">
+                                <span class="material-icons">content_copy</span> Copy
+                            </button>
+                            <button type="button" class="btn-ref btn-ref-primary" onclick="autoFillSection('terms')">
+                                <span class="material-icons">edit</span> Fill Form
+                            </button>
+                        </div>
+                    </div>
+                    <pre class="reference-content-pre">- Please check the copies of advertisements released, attached to the bill.
+- Check the bill amount and notify us immediately if incorrect.
+- Amount should be remitted through cheque/D.D. in favour of M/s DEVI ADS.
+- Bill amount not paid on the agreed date shall be charged 24% per annum.
+- Please acknowledge the attached copy to the original invoice/bill</pre>
+                </div>
+
+                <!-- Section 3: Bank Details -->
+                <div class="reference-card">
+                    <div class="reference-card-header">
+                        <span class="reference-card-title">
+                            <span class="material-icons text-success" style="color: var(--success-color);">account_balance</span> Bank Details
+                        </span>
+                        <div class="reference-card-actions">
+                            <button type="button" class="btn-ref btn-ref-secondary" onclick="copyToClipboard('DEVI ADS\nKarur Vysya Bank\n1405115000002402\nKVBL0001405\nKurnool (AP)\nAGOPG1105H', this)">
+                                <span class="material-icons">content_copy</span> Copy
+                            </button>
+                            <button type="button" class="btn-ref btn-ref-primary" onclick="autoFillSection('bank')">
+                                <span class="material-icons">edit</span> Fill Form
+                            </button>
+                        </div>
+                    </div>
+                    <pre class="reference-content-pre">DEVI ADS
+Karur Vysya Bank
+1405115000002402
+KVBL0001405
+Kurnool (AP)
+AGOPG1105H</pre>
+                </div>
+
+                <!-- Section 4: Full Unified Text -->
+                <div class="reference-card">
+                    <div class="reference-card-header">
+                        <span class="reference-card-title">
+                            <span class="material-icons text-dark" style="color: var(--dark-color);">description</span> Full Reference Block
+                        </span>
+                        <div class="reference-card-actions">
+                            <button type="button" class="btn-ref btn-ref-secondary" onclick="copyToClipboard(RAW_REFERENCE_TEXT, this)">
+                                <span class="material-icons">content_copy</span> Copy All
+                            </button>
+                        </div>
+                    </div>
+                    <pre class="reference-content-pre" style="font-size: 11px; max-height: 180px; overflow-y: auto;">DEVI ADS
+OUT DOOR SERVICES
++919440292923, 08518796233 (Landline)
+14970249@kvb
+37AGOPG1150H1ZJ
+998361
+G 2, A Block, Ground Floor, Surya Towers, Near Devi Building, Challa Compound, Bhagya Nagar, Kurnool - 518004
+
+-------------------
+
+- Please check the copies of advertisements released, attached to the bill.
+- Check the bill amount and notify us immediately if incorrect.
+- Amount should be remitted through cheque/D.D. in favour of M/s DEVI ADS.
+- Bill amount not paid on the agreed date shall be charged 24% per annum.
+- Please acknowledge the attached copy to the original invoice/bill
+
+----------------
+DEVI ADS
+Karur Vysya Bank
+1405115000002402
+KVBL0001405
+Kurnool (AP)
+AGOPG1105H</pre>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- ============================
          JavaScript Modules (load order matters)
          ============================ -->
@@ -727,6 +863,7 @@
     <script src="js/preview.js"></script>
     <script src="js/pdf.js"></script>
     <script src="js/whatsapp.js"></script>
+    <script src="js/reference.js"></script>
     <script src="js/app.js"></script>
 
 </body>

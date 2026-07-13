@@ -56,6 +56,8 @@ function loadSignature() {
         if (saved) {
             uploadedSignature = saved;
             displaySignaturePreview(saved);
+        } else {
+            loadDefaultSignature();
         }
         
         const savedScale = localStorage.getItem('billingSignatureScale');
@@ -78,6 +80,14 @@ function loadSignature() {
     } catch (error) {
         console.error('Error loading signature/scale:', error);
     }
+}
+
+/**
+ * Load default signature image from local assets
+ */
+function loadDefaultSignature() {
+    uploadedSignature = "images/signature.jpg";
+    displaySignaturePreview("images/signature.jpg");
 }
 
 /**

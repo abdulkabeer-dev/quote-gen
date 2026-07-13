@@ -95,6 +95,7 @@ function collectInvoiceData() {
             location: document.getElementById('customerLocation').value || ''
         },
         invoice: {
+            documentType: document.getElementById('documentType')?.value || 'TAX INVOICE',
             id: document.getElementById('invoiceId').value,
             date: document.getElementById('invoiceDate').value,
             campaignText: document.getElementById('campaignText').value || ''
@@ -183,6 +184,17 @@ function populatePreview() {
     }
 
     // === Invoice Meta ===
+    const docType = data.invoice.documentType || 'TAX INVOICE';
+    const docTitleEl = document.getElementById('previewDocumentTitle');
+    const idLabelEl = document.getElementById('previewInvoiceIdLabel');
+    
+    if (docTitleEl) {
+        docTitleEl.textContent = docType;
+    }
+    if (idLabelEl) {
+        idLabelEl.textContent = docType === 'QUOTATION' ? 'Quotation No:' : 'Invoice No:';
+    }
+    
     document.getElementById('previewInvoiceId').textContent = data.invoice.id;
     document.getElementById('previewInvoiceDate').textContent = formatDate(data.invoice.date);
 

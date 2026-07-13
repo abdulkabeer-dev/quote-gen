@@ -98,11 +98,13 @@ async function generateInvoice() {
 
         // Save PDF
         const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
-        const fileName = `Invoice_${currentInvoiceData.invoice.id}_${customerName}.pdf`;
+        const docType = currentInvoiceData.invoice.documentType || 'TAX INVOICE';
+        const filePrefix = docType === 'QUOTATION' ? 'Quotation' : 'Invoice';
+        const fileName = `${filePrefix}_${currentInvoiceData.invoice.id}_${customerName}.pdf`;
         pdf.save(fileName);
 
         hideLoading();
-        showSuccess('Invoice PDF generated and downloaded!', 5000);
+        showSuccess(`${filePrefix} PDF generated and downloaded!`, 5000);
 
         document.getElementById('whatsappSection').style.display = 'block';
         updateWhatsAppPreview();

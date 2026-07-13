@@ -19,7 +19,8 @@ function updateWhatsAppPreview() {
         message += `${customMessage}\n\n`;
     }
 
-    message += `📋 *TAX INVOICE*\n\n`;
+    const docType = data.invoice.documentType || 'TAX INVOICE';
+    message += `📋 *${docType}*\n\n`;
     message += `🏢 *Company:* ${data.company.name}\n`;
     if (data.company.phone) message += `📞 *Phone:* ${data.company.phone}\n`;
     if (data.company.address) message += `📍 *Address:* ${data.company.address}\n`;
@@ -32,7 +33,8 @@ function updateWhatsAppPreview() {
     if (data.customer.email) message += `✉️ *Email:* ${data.customer.email}\n`;
     if (data.customer.location) message += `📍 *Location:* ${data.customer.location}\n`;
 
-    message += `\n🧾 *Invoice ID:* ${data.invoice.id}\n`;
+    const idLabel = docType === 'QUOTATION' ? 'Quotation ID' : 'Invoice ID';
+    message += `\n🧾 *${idLabel}:* ${data.invoice.id}\n`;
     message += `📅 *Date:* ${formatDate(data.invoice.date)}\n`;
     if (data.invoice.campaignText) {
         message += `📅 *Campaign:* ${data.invoice.campaignText}\n`;

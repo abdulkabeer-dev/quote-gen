@@ -133,7 +133,14 @@
 
             <div class="invoice-meta">
                 <div class="form-group">
-                    <label class="form-label">Invoice Number</label>
+                    <label class="form-label">Document Type</label>
+                    <select class="form-input" id="documentType" onchange="onDocumentTypeChange()">
+                        <option value="TAX INVOICE" selected>Tax Invoice</option>
+                        <option value="QUOTATION">Quotation</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" id="invoiceIdLabel">Invoice Number</label>
                     <input type="text" class="form-input" id="invoiceId" placeholder="Enter Invoice Number" />
                 </div>
                 <div class="form-group">
@@ -620,8 +627,8 @@
             <!-- Right: Invoice Title & Meta -->
             <div class="invoice-right-panel">
                 <div class="invoice-meta-info">
-                    <h2 class="invoice-title">TAX INVOICE</h2>
-                    <p><strong>Invoice No:</strong> <span id="previewInvoiceId">INV-001</span></p>
+                    <h2 class="invoice-title" id="previewDocumentTitle">TAX INVOICE</h2>
+                    <p><strong><span id="previewInvoiceIdLabel">Invoice No:</span></strong> <span id="previewInvoiceId">INV-001</span></p>
                     <p><strong>Date:</strong> <span id="previewInvoiceDate">01 January 2026</span></p>
                 </div>
                 <div class="invoice-bank-details" id="previewBankDetails" style="display: none;">

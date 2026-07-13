@@ -168,6 +168,7 @@ function saveTemplate() {
             signatureEnabled: document.getElementById('signatureEnabled')?.checked !== false
         },
         note: savedNote,
+        documentType: document.getElementById('documentType')?.value || 'TAX INVOICE',
         timestamp: new Date().toISOString()
     };
 
@@ -255,6 +256,15 @@ function loadTemplate() {
                 savedNote = data.note;
                 displayNote();
             }
+
+            // Document Type
+            if (data.documentType) {
+                const docTypeSelect = document.getElementById('documentType');
+                if (docTypeSelect) {
+                    docTypeSelect.value = data.documentType;
+                }
+                updateDocumentTypeUI(data.documentType);
+            }
         } else {
             // Load default company logo when no template is saved
             loadDefaultLogo();
@@ -302,5 +312,35 @@ function autoUpdateCampaignText() {
         const formattedStart = `${startParts[2]}.${startParts[1]}.${startParts[0]}`;
         const formattedEnd = `${endParts[2]}.${endParts[1]}.${endParts[0]}`;
         document.getElementById('campaignText').value = `CAMPAIGN: ${formattedStart} TO ${formattedEnd}`;
+    }
+}
+
+/**
+ * Triggers when Document Type selection changes
+ */
+function onDocumentTypeChange() {
+    const docType = document.getElementById('documentType').value;
+    updateDocumentTypeUI(docType);
+    
+    // Automatically recalculate and regenerate preview
+    calculateGrandTotal();
+    collectInvoiceData();
+    populatePreview();
+}
+
+/**
+ * Updates UI labels and placeholders based on Document Type selection
+ * @param {string} type - 'TAX INVOICE' | 'QUOTATION'
+ */
+function updateDocumentTypeUI(type) {
+    const label = document.getElementById('invoiceIdLabel');
+    const input = document.getElementById('invoiceId');
+    
+    if (type === 'QUOTATION') {
+        if (label) label.textContent = 'Quotation Number';
+        if (input) input.placeholder = 'Enter Quotation Number';
+    } else {
+        if (label) label.textContent = 'Invoice Number';
+        if (input) input.placeholder = 'Enter Invoice Number';
     }
 }

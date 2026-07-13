@@ -1,0 +1,17 @@
+{
+  "name": "DEVI ADS - Invoice Generator",
+  "short_name": "DeviAds",
+  "description": "Offline Tax Invoice & Quotation Generator for DEVI ADS",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#4f46e5",
+  "theme_color": "#4f46e5",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "images/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

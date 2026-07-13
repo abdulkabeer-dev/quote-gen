@@ -301,6 +301,11 @@ body::before {
     color: var(--white);
 }
 
+.invoice-meta select.form-input option {
+    background-color: var(--white);
+    color: var(--dark-color);
+}
+
 .invoice-meta .form-input::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
